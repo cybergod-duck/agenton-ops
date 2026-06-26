@@ -134,9 +134,9 @@ def calculate_score(job: Job) -> float:
     platform_trusts = {
         "dealwork": 1.2,
         "bountybook": 1.0,
-        "claw earn": 0.9,
-        "claw": 0.9,
-        "ugig": 1.0
+        "claw earn": 1.1,
+        "claw": 1.1,
+        "ugig": 0.9
     }
     p_trust = platform_trusts.get(job.platform.lower(), 1.0)
     

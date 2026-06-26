@@ -22,6 +22,7 @@ import requests
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from job_scoring import Job, score_job, LLM_MODEL, LLM_API_BASE
 from ugig_client import UgigClient
+from prompt_templates import get_template
 
 # ── Config & Paths ────────────────────────────────────────────────────────────
 BOT_ENV_PATH    = Path(r"C:\BC RESEARCH\AI_FACTORY\bot.env")
@@ -30,9 +31,12 @@ OUTPUT_DIR      = AGENTON_ROOT / "outputs" / "multi-earn"
 SUBMISSIONS_MD  = OUTPUT_DIR / "ugig-submissions.md"
 PAYOUTS_MD      = OUTPUT_DIR / "ugig-payouts.md"
 LOG_FILE        = OUTPUT_DIR / "ugig.log"
+STATE_FILE      = OUTPUT_DIR / "ugig_state.json"
 
-BUDGET_MIN      = 1.0    # USD
+BUDGET_MIN      = 5.0    # USD
 BUDGET_MAX      = 100.0  # USD
+UGIG_MIN_SCORE  = 0.45   # Minimum score for auto-claim
+MAX_ACTIVE_CLAIMS = 2    # Max concurrent active claims
 CAPABILITIES    = ["writing", "research", "code", "data"]
 SUBMIT_DELAY    = 5
 
@@ -48,6 +52,26 @@ logging.basicConfig(
 )
 log = logging.getLogger("ugig_agent")
 sys.stdout.reconfigure(encoding="utf-8")
+
+# ── State Management ──────────────────────────────────────────────────────────
+def load_state() -> dict:
+    if STATE_FILE.exists():
+        try:
+            state = json.loads(STATE_FILE.read_text(encoding="utf-8"))
+            if "active_jobs" not in state:
+                state["active_jobs"] = []
+            if "rejected_jobs" not in state:
+                state["rejected_jobs"] = []
+            return state
+        except Exception as e:
+            log.warning(f"Error loading ugig state: {e}")
+    return {"active_jobs": [], "rejected_jobs": []}
+
+def save_state(state: dict):
+    try:
+        STATE_FILE.write_text(json.dumps(state, indent=2), encoding="utf-8")
+    except Exception as e:
+        log.warning(f"Error saving ugig state: {e}")
 
 # ── Env Loading ───────────────────────────────────────────────────────────────
 def load_env(path: Path = BOT_ENV_PATH) -> dict:
@@ -150,19 +174,12 @@ def onboard_agent(env: dict) -> UgigClient:
 
 # ── LLM Work Execution ────────────────────────────────────────────────────────
 def generate_work_with_llm(job: Job, openrouter_key: str) -> str:
-    prompt = f"""You are a professional freelance AI worker completing a contract gig on ugig.net.
-
-Gig Title: {job.title}
-Budget: {job.reward_usd} USD
-Category: {job.category}
-Description:
-{job.description}
-
-Complete this task in full and with highest professional quality. 
-Return only the completed work/deliverable in clean Markdown format. 
-Do not add metadata, introduction, explanation, or conversational preamble.
-Provide the actual files, analysis, scripts, or content requested.
-"""
+    template = get_template(job.category)
+    prompt = template.format(
+        title=job.title,
+        reward=job.reward_usd,
+        description=job.description
+    )
     url = f"{LLM_API_BASE}/chat/completions"
     headers = {
         "Authorization": f"Bearer {openrouter_key}",
@@ -228,6 +245,56 @@ def git_sync(quest_title: str):
     except Exception as e:
         log.warning(f"Git sync failed: {e}")
 
+# ── Outcome Tracking ──────────────────────────────────────────────────────────
+def update_payouts_status(client: UgigClient):
+    if not PAYOUTS_MD.exists():
+        return
+    
+    my_apps = client.list_my_applications()
+    if not my_apps:
+        return
+        
+    gig_to_status = {}
+    for app in my_apps:
+        gid = app.get("gig_id")
+        status = app.get("status")
+        # Normalize status for markdown presentation
+        if status == "accepted":
+            display_status = "accepted (work approved/in progress)"
+        elif status == "pending":
+            display_status = "applied (pending acceptance)"
+        else:
+            display_status = f"{status}"
+        gig_to_status[str(gid)] = display_status
+        
+    content = PAYOUTS_MD.read_text(encoding="utf-8")
+    updated = False
+    
+    # Match block header like: ## [Title] — Gig `id`
+    # and fields like: - **Status**: status_value\n
+    blocks = content.split("## ")
+    new_blocks = [blocks[0]]
+    
+    for block in blocks[1:]:
+        title_match = re.search(r"\[(.*?)\]\s*—\s*Gig\s*`(.*?)`", block)
+        if title_match:
+            gid = title_match.group(2)
+            if gid in gig_to_status:
+                new_status = gig_to_status[gid]
+                status_match = re.search(r"-\s+\*\*Status\*\*:\s*(.*?)\n", block)
+                if status_match:
+                    old_status = status_match.group(1).strip()
+                    if old_status != new_status:
+                        block = block.replace(f"- **Status**: {old_status}", f"- **Status**: {new_status}")
+                        updated = True
+        new_blocks.append(block)
+        
+    if updated:
+        new_content = "## ".join(new_blocks)
+        PAYOUTS_MD.write_text(new_content, encoding="utf-8")
+        log.info("ugig-payouts.md updated with remote status details.")
+        git_sync("remote status sync")
+
 # ── Main Loop ─────────────────────────────────────────────────────────────────
 def main():
     log.info(f"[{datetime.now().isoformat()}] --- Starting ugig.net Earn Loop ---")
@@ -250,12 +317,42 @@ def main():
         log.exception(f"Authentication failed: {e}")
         sys.exit(1)
 
+    # Poll status / update payout md
+    if not dry_run:
+        try:
+            update_payouts_status(client)
+        except Exception as e:
+            log.warning(f"Failed to update payout statuses: {e}")
+
+    # Load State
+    state = load_state()
+    
+    # Sync state list from remote applications
+    if not dry_run:
+        try:
+            my_apps = client.list_my_applications()
+            active_jobs = []
+            rejected_jobs = []
+            for app in my_apps:
+                gig_id = app.get("gig_id")
+                status = app.get("status")
+                if gig_id:
+                    if status in ("pending", "reviewing", "shortlisted"):
+                        active_jobs.append(gig_id)
+                    elif status == "rejected":
+                        rejected_jobs.append(gig_id)
+            state["active_jobs"] = list(set(active_jobs))
+            state["rejected_jobs"] = list(set(rejected_jobs))
+            save_state(state)
+            log.info(f"State synced from remote: {len(state['active_jobs'])} active, {len(state['rejected_jobs'])} rejected.")
+        except Exception as e:
+            log.warning(f"Could not sync state from remote applications: {e}")
+
     # Fetch Gigs
     gigs = client.list_jobs(limit=50)
     log.info(f"Fetched {len(gigs)} unique gigs from ugig.net")
 
     # Filter & Score gigs
-    attempted = set()
     scored_count = 0
     submitted_count = 0
     
@@ -271,14 +368,26 @@ def main():
         if job.reward_usd > BUDGET_MAX:
             continue
             
+        # Concurrency and duplicate checks
+        if jid in state["active_jobs"]:
+            log.info(f"Gig {jid} is already active/claimed. Skipping.")
+            continue
+        if jid in state["rejected_jobs"]:
+            log.info(f"Gig {jid} was rejected. Skipping.")
+            continue
+            
+        if len(state["active_jobs"]) >= MAX_ACTIVE_CLAIMS:
+            log.info(f"Reached maximum concurrent active claims ({MAX_ACTIVE_CLAIMS}). Skipping new claims.")
+            break
+            
         log.info(f"Scoring Gig: '{job.title}' (${job.reward_usd} USD)")
         try:
             score, evaluated_job = score_job(job, openrouter_key)
             log.info(f"Gig {jid} score: {score} (Category: {evaluated_job.category}, Complexity: {evaluated_job.complexity})")
             scored_count += 1
             
-            if score < 0.4:
-                log.info(f"Skip Gig {jid} — score {score} below 0.4 threshold")
+            if score < UGIG_MIN_SCORE:
+                log.info(f"Skip Gig {jid} — score {score} below {UGIG_MIN_SCORE} threshold")
                 continue
         except Exception as e:
             log.warning(f"Scoring failed for Gig {jid}: {e}")
@@ -312,6 +421,11 @@ def main():
             if app_id:
                 log_submission(evaluated_job, deliverable, status="submitted")
                 log_payout(evaluated_job, status="applied (pending acceptance)")
+                
+                # Update local state
+                state["active_jobs"].append(jid)
+                save_state(state)
+                
                 submitted_count += 1
                 git_sync(evaluated_job.title)
                 
@@ -321,8 +435,8 @@ def main():
                 log.warning(f"Failed to apply to Gig {jid}")
 
         # Limit concurrent claims per loop to avoid spam
-        if submitted_count >= 2:
-            log.info("Reached maximum concurrent claims limit (2) for this loop. Staggering rest.")
+        if len(state["active_jobs"]) >= MAX_ACTIVE_CLAIMS:
+            log.info("Reached maximum concurrent claims limit. Staggering rest.")
             break
 
     log.info(f"ugig.net Earn Loop complete. Scored: {scored_count}, Processed/Submitted: {submitted_count}")

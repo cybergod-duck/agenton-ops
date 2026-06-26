@@ -193,3 +193,15 @@ class UgigClient:
         except Exception as e:
             log.error(f"Error submitting result to conversation for gig {job_id}: {e}")
             return False
+
+    def list_my_applications(self) -> list[dict]:
+        """Get all applications submitted by the authenticated user."""
+        url = f"{UGIG_BASE_URL}/api/applications/my"
+        try:
+            r = self.session.get(url, headers=self._headers(), timeout=20)
+            r.raise_for_status()
+            data = r.json()
+            return data.get("applications", []) if isinstance(data, dict) else data
+        except Exception as e:
+            log.error(f"Failed to list my applications from ugig.net: {e}")
+            return []
