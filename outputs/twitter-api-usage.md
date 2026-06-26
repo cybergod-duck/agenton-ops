@@ -13,3 +13,5 @@ You are not permitted to perform this action. |
 | 2026-06-26 12:26:54 | POST /2/users/:id/following | 1625959066144235521 | $0.01 | Success |
 | 2026-06-26 12:26:54 | POST /2/tweets | HumanEffort.AI is making waves in the AI Agent spa | $0.01 | Success |
 | 2026-06-26 12:27:51 | GET /2/users/by/username/:username | 0xenid_ | $0.01 | Success |
+| 2026-06-26 12:33:00 | POST /2/users/:id/likes | 2066882746148946193 | $0.01 | Success |
+| 2026-06-26 12:33:00 | POST /2/tweets | @Toco_Toco_Toco The upcoming $TOCO PancakeSwap lau | $0.01 | Success |

@@ -22,6 +22,7 @@
 | 2026-06-26 | 关注并与Fufuture推文进行互动 (Automated) | 10.00 | Pending | Submission ID: 91b8accc-3053-4fbe-8b33-a5420675c7a0 |
 | 2026-06-26 | A working AI agent that autonomously completes a real purchase through Snaplii's A2M MCP server (Automated) | 0.50 | Pending | Submission ID: 538e4af0-39f8-4696-92f1-066201dcacd2 |
 | 2026-06-26 | 关注HumanEffort.AI + 发文，轻松赚USD奖励 (Automated) | 0.50 | Pending | Submission ID: c0291b68-7250-47db-9469-7be93a4db493 |
+| 2026-06-26 | Follow $TOCO and Join the Green Meme Conversation (Automated) | 25000000.00 | Pending | Submission ID: c5bb0d1c-1eb9-4ca1-93c8-4e5fa4e144c3 |
 
 ## Totals
 | Period | Amount |
