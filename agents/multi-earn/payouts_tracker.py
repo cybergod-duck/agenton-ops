@@ -561,48 +561,173 @@ def send_onchain_evm_transfer(coin: str, amount_usd: float) -> str | None:
         
     return None
 
-def trigger_kraken_withdrawal(coin: str, amount: float) -> str | None:
+def send_onchain_sol_transfer() -> str | None:
     keys = load_bot_env()
-    api_key = keys.get("KRAKEN_API_KEY")
-    priv_key = keys.get("KRAKEN_PRIVATE_KEY")
-    if not api_key or not priv_key:
-        log.warning("Kraken credentials not configured for withdrawal.")
+    priv_b58 = keys.get("AGENT_SOL_PRIVATE_KEY")
+    recipient_str = keys.get("SOL_ADDRESS")
+    if not priv_b58 or not recipient_str:
+        log.warning("Solana keys not configured in bot.env.")
         return None
         
-    coin_map = {
-        "BTC": "XXBT",
-        "XBT": "XXBT",
-        "ETH": "XETH",
-        "SOL": "SOL",
-        "DOGE": "XXDG",
-        "XDG": "XXDG",
-        "USDC": "USDC"
-    }
-    asset_code = coin_map.get(coin.upper(), coin.upper())
+    try:
+        from solana.rpc.api import Client
+        from solders.keypair import Keypair
+        from solders.pubkey import Pubkey
+        from solders.system_program import TransferParams, transfer
+        from solders.transaction import Transaction
+        
+        client = Client("https://api.mainnet-beta.solana.com")
+        sender_kp = Keypair.from_base58_string(priv_b58)
+        receiver_pubkey = Pubkey.from_string(recipient_str)
+        
+        res = client.get_balance(sender_kp.pubkey())
+        balance_lamports = res.value
+        
+        fee_lamports = 10000
+        amount_lamports = balance_lamports - fee_lamports
+        
+        if amount_lamports <= 0:
+            log.warning(f"Solana balance ({balance_lamports} lamports) too low for transfer.")
+            return None
+            
+        blockhash = client.get_latest_blockhash().value.blockhash
+        transfer_params = TransferParams(
+            from_pubkey=sender_kp.pubkey(),
+            to_pubkey=receiver_pubkey,
+            lamports=amount_lamports
+        )
+        ix = transfer(transfer_params)
+        tx = Transaction.new_signed_with_payer([ix], sender_kp.pubkey(), [sender_kp], blockhash)
+        
+        send_res = client.send_raw_transaction(bytes(tx))
+        return str(send_res.value)
+    except Exception as e:
+        log.error(f"Solana on-chain transfer failed: {e}")
+        return None
+
+def send_onchain_btc_transfer() -> str | None:
+    keys = load_bot_env()
+    priv_hex = keys.get("AGENT_BTC_PRIVATE_KEY")
+    from_addr = keys.get("AGENT_BTC_ADDRESS")
+    to_addr = keys.get("BTC_ADDRESS")
     
-    key_name = "TREASURY_ADDRESS"
-    if coin.upper() == "SOL":
-        key_name = "SOL_ADDRESS"
-    elif coin.upper() == "BTC":
-        key_name = "BTC_ADDRESS"
-    elif coin.upper() == "DOGE":
-        key_name = "DOGE_ADDRESS"
+    if not priv_hex or not from_addr or not to_addr:
+        log.warning("Bitcoin keys not configured in bot.env.")
+        return None
         
     try:
-        from kraken.spot import Funding
-        from crypto.kraken_client import bind_nonce
+        import requests
+        import cryptos
         
-        funding = Funding(
-            key=api_key.strip().strip('"').strip("'"),
-            secret=priv_key.strip().strip('"').strip("'")
-        )
-        bind_nonce(funding)
+        utxo_url = f"https://blockstream.info/api/address/{from_addr}/utxo"
+        r = requests.get(utxo_url, timeout=10)
+        if r.status_code != 200:
+            log.error(f"Failed to fetch BTC UTXOs: {r.status_code}")
+            return None
+            
+        utxos = r.json()
+        if not utxos:
+            log.warning("No BTC UTXOs available to spend.")
+            return None
+            
+        inputs = []
+        total_balance = 0
+        for utxo in utxos:
+            inputs.append({
+                'output': f"{utxo['txid']}:{utxo['vout']}",
+                'value': utxo['value']
+            })
+            total_balance += utxo['value']
+            
+        fee = 3000
+        amount_to_send = total_balance - fee
+        if amount_to_send <= 0:
+            log.warning(f"BTC balance ({total_balance} sats) too low to cover fee.")
+            return None
+            
+        btc = cryptos.Bitcoin()
+        outputs = [{'address': to_addr, 'value': amount_to_send}]
+        tx = btc.mktx(inputs, outputs)
         
-        res = funding.withdraw_funds(asset=asset_code, key=key_name, amount=amount)
-        return res.get("refid")
+        for i in range(len(inputs)):
+            tx = btc.sign(tx, i, priv_hex)
+            
+        raw_tx_hex = cryptos.serialize(tx)
+        
+        push_url = "https://blockstream.info/api/tx"
+        push_res = requests.post(push_url, data=raw_tx_hex, timeout=15)
+        if push_res.status_code == 200:
+            return push_res.text.strip()
+        else:
+            log.error(f"Failed to broadcast BTC tx: {push_res.status_code} - {push_res.text}")
+            return None
     except Exception as e:
-        log.error(f"Kraken withdrawal for {coin} failed: {e}")
-        raise e
+        log.error(f"BTC on-chain transfer failed: {e}")
+        return None
+
+def send_onchain_doge_transfer() -> str | None:
+    keys = load_bot_env()
+    priv_hex = keys.get("AGENT_DOGE_PRIVATE_KEY")
+    from_addr = keys.get("AGENT_DOGE_ADDRESS")
+    to_addr = keys.get("DOGE_ADDRESS")
+    
+    if not priv_hex or not from_addr or not to_addr:
+        log.warning("Dogecoin keys not configured in bot.env.")
+        return None
+        
+    try:
+        import requests
+        import cryptos
+        
+        utxo_url = f"https://api.blockcypher.com/v1/doge/main/addrs/{from_addr}?unspentOnly=true"
+        r = requests.get(utxo_url, timeout=10)
+        if r.status_code != 200:
+            log.error(f"Failed to fetch DOGE UTXOs: {r.status_code}")
+            return None
+            
+        data = r.json()
+        txrefs = data.get("txrefs", [])
+        if not txrefs:
+            log.warning("No DOGE UTXOs available to spend.")
+            return None
+            
+        inputs = []
+        total_balance = 0
+        for ref in txrefs:
+            if not ref.get("spent"):
+                inputs.append({
+                    'output': f"{ref['tx_hash']}:{ref['tx_output_n']}",
+                    'value': ref['value']
+                })
+                total_balance += ref['value']
+                
+        fee = 150000000
+        amount_to_send = total_balance - fee
+        if amount_to_send <= 0:
+            log.warning(f"DOGE balance ({total_balance} koinu) too low to cover fee.")
+            return None
+            
+        doge = cryptos.Doge()
+        outputs = [{'address': to_addr, 'value': amount_to_send}]
+        tx = doge.mktx(inputs, outputs)
+        
+        for i in range(len(inputs)):
+            tx = doge.sign(tx, i, priv_hex)
+            
+        raw_tx_hex = cryptos.serialize(tx)
+        
+        push_url = "https://api.blockcypher.com/v1/doge/main/txs/push"
+        payload = {"tx": raw_tx_hex}
+        push_res = requests.post(push_url, json=payload, timeout=15)
+        if push_res.status_code in (200, 201):
+            res_data = push_res.json()
+            return res_data.get("tx", {}).get("hash")
+        else:
+            log.error(f"Failed to broadcast DOGE tx: {push_res.status_code} - {push_res.text}")
+            return None
+    except Exception as e:
+        log.error(f"DOGE on-chain transfer failed: {e}")
+        return None
 
 def trigger_auto_withdrawal(platform: str, job_id: str, title: str, reward_usd: float, currency: str):
     keys = load_bot_env()
@@ -618,68 +743,36 @@ def trigger_auto_withdrawal(platform: str, job_id: str, title: str, reward_usd: 
         
     log.info(f"Triggering auto-withdrawal for {reward_usd} {coin} to {target_address}")
     
+    tx_hash = None
     if coin in ("ETH", "USDC"):
         tx_hash = send_onchain_evm_transfer(coin, reward_usd)
-        if tx_hash:
-            msg = (
-                f"📤 *Auto-Withdrawal Fired Successfully (On-Chain)*\n"
-                f"• *Platform*: `{platform}`\n"
-                f"• *Job*: `{title}`\n"
-                f"• *Asset*: `{coin}`\n"
-                f"• *Amount*: `{reward_usd}` USD equivalent\n"
-                f"• *Recipient*: `{target_address}`\n"
-                f"• *Tx Hash*: `{tx_hash}`"
-            )
-            notify_telegram(msg)
-        else:
-            msg = (
-                f"⚠️ *Auto-Withdrawal Failed (On-Chain)*\n"
-                f"• *Platform*: `{platform}`\n"
-                f"• *Job*: `{title}`\n"
-                f"• *Asset*: `{coin}`\n"
-                f"• *Amount*: `{reward_usd}` USD equivalent\n"
-                f"• *Recipient*: `{target_address}`\n"
-                f"• *Error*: `Transaction signing failed, execution failed, or insufficient balance`"
-            )
-            notify_telegram(msg)
-        return
-            
-    try:
-        coin_price = 1.0
-        if coin not in ("USDC", "USDT", "USD"):
-            try:
-                import requests
-                r = requests.get(f"https://api.coinbase.com/v2/prices/{coin}-USD/spot", timeout=5)
-                if r.status_code == 200:
-                    coin_price = float(r.json()["data"]["amount"])
-            except Exception:
-                fallbacks = {"SOL": 130.0, "BTC": 60000.0, "ETH": 3300.0, "DOGE": 0.12}
-                coin_price = fallbacks.get(coin, 1.0)
-                
-        coin_amount = reward_usd / coin_price
+    elif coin == "SOL":
+        tx_hash = send_onchain_sol_transfer()
+    elif coin == "BTC":
+        tx_hash = send_onchain_btc_transfer()
+    elif coin == "DOGE":
+        tx_hash = send_onchain_doge_transfer()
         
-        ref_id = trigger_kraken_withdrawal(coin, coin_amount)
-        if ref_id:
-            msg = (
-                f"📤 *Auto-Withdrawal Fired Successfully (Kraken)*\n"
-                f"• *Platform*: `{platform}`\n"
-                f"• *Job*: `{title}`\n"
-                f"• *Asset*: `{coin}`\n"
-                f"• *Amount*: `{coin_amount:.6f}` `{coin}` (`${reward_usd}` USD)\n"
-                f"• *Recipient*: `{target_address}`\n"
-                f"• *Ref ID*: `{ref_id}`"
-            )
-            notify_telegram(msg)
-            return
-    except Exception as e:
+    if tx_hash:
         msg = (
-            f"⚠️ *Auto-Withdrawal Failed*\n"
+            f"📤 *Auto-Withdrawal Fired Successfully (On-Chain)*\n"
             f"• *Platform*: `{platform}`\n"
             f"• *Job*: `{title}`\n"
             f"• *Asset*: `{coin}`\n"
-            f"• *Amount*: `${reward_usd}` USD\n"
+            f"• *Amount*: `{reward_usd}` USD equivalent\n"
             f"• *Recipient*: `{target_address}`\n"
-            f"• *Error*: `{str(e)}`"
+            f"• *Tx Hash*: `{tx_hash}`"
+        )
+        notify_telegram(msg)
+    else:
+        msg = (
+            f"⚠️ *Auto-Withdrawal Failed (On-Chain)*\n"
+            f"• *Platform*: `{platform}`\n"
+            f"• *Job*: `{title}`\n"
+            f"• *Asset*: `{coin}`\n"
+            f"• *Amount*: `{reward_usd}` USD equivalent\n"
+            f"• *Recipient*: `{target_address}`\n"
+            f"• *Error*: `Transaction signing failed, execution failed, or insufficient balance`"
         )
         notify_telegram(msg)
 
