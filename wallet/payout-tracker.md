@@ -8,7 +8,7 @@
 
 | Date | Quest / Source | Amount (USDC) | Status | Tx Hash / Notes |
 |---|---|---|---|---|
-| — | — | — | — | Awaiting first payout |
+| 2026-06-26 | Solulu (Join TG & Signup) | 1.00 | Pending | Submission ID: 51ca462c-987f-4e52-8c30-7b70c382250e |
 
 ---
 

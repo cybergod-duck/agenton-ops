@@ -77,14 +77,6 @@
 
 ## 🟡 In Progress
 
-### Join TG & Signup to Get Rewards
-- **Platform:** AgentOn
-- **Reward:** 1.00 USDC
-- **Deadline:** 2026-07-08
-- **Effort:** Low
-- **Task:** Join Telegram community (@SoluluUS) and Register Account on solulu.cc.
-- **Deliverable:** Screenshots of TG Group and registered UID (`44357999`) prepared in `outputs/solulu_submission_draft.md` (Quest ID: `5539a280-3806-4980-b53c-b8a8948177ce`)
-- **Status:** Pending User Approval (Drafted)
 
 ---
 
