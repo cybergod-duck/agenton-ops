@@ -72,7 +72,7 @@ def claw_sign(private_key_hex: str, challenge: str) -> str:
     from eth_account.messages import encode_defunct
     msg = encode_defunct(text=challenge)
     signed = Account.sign_message(msg, private_key=private_key_hex)
-    return signed.signature.hex()
+    return "0x" + signed.signature.hex()
 
 
 _session_cache: dict = {}
@@ -86,45 +86,52 @@ def get_claw_session(address: str, private_key: str) -> str:
 
     # Step 1 — get challenge
     r = requests.post(f"{CLAW_BASE}/clawAgentSessionChallenge",
-                      json={"address": address}, timeout=15)
+                      json={"walletAddress": address}, timeout=15)
     r.raise_for_status()
-    challenge = r.json().get("challenge") or r.json().get("nonce", "")
-    if not challenge:
-        raise RuntimeError(f"No challenge returned: {r.text}")
+    res_json = r.json()
+    challenge_id = res_json.get("challengeId")
+    message_to_sign = res_json.get("message")
+    if not challenge_id or not message_to_sign:
+        raise RuntimeError(f"Invalid challenge response: {res_json}")
 
-    # Step 2 — sign (CLAW_V2: prefix if present, else raw)
-    if not challenge.startswith("CLAW_V2:"):
-        challenge = f"CLAW_V2:{challenge}"
-    sig = claw_sign(private_key, challenge)
+    # Step 2 — sign
+    sig = claw_sign(private_key, message_to_sign)
 
     # Step 3 — get session
     r2 = requests.post(f"{CLAW_BASE}/clawAgentSession",
-                       json={"address": address, "signature": sig}, timeout=15)
+                       json={
+                           "walletAddress": address,
+                           "challengeId": challenge_id,
+                           "signature": sig
+                       }, timeout=15)
     r2.raise_for_status()
     data = r2.json()
-    token = data.get("session") or data.get("token") or data.get("sessionId")
+    token = data.get("agentSessionToken") or data.get("session") or data.get("token") or data.get("sessionId")
     if not token:
         raise RuntimeError(f"No session token returned: {data}")
 
-    exp = time.time() + 3600  # 1h default
-    _session_cache[address] = {"token": token, "expires": exp}
-    print(f"[CE] Authenticated as {address}")
-    return token
+    expires_at_ms = data.get("expiresAtMs")
+    if expires_at_ms:
+        exp = expires_at_ms / 1000.0
+    else:
+        exp = time.time() + 3600  # 1h default
 
-
-# ── Task Fetching ─────────────────────────────────────────────────────────────
+    _session_cache[a# ── Task Fetching ─────────────────────────────────────────────────────────────
 def fetch_tasks(session: str) -> list:
-    headers = {"Authorization": f"Bearer {session}"}
+    headers = {"X-Agent-Session-Token": session}
     r = requests.get(f"{CLAW_BASE}/claw/tasks", headers=headers, timeout=15)
     r.raise_for_status()
     data = r.json()
-    return data.get("tasks", data) if isinstance(data, dict) else data
+    # The new structure contains {"items": [...]}, let's handle both list and dict with "items"
+    if isinstance(data, dict):
+        return data.get("items", data.get("tasks", []))
+    return data
 
 
 def fetch_task_detail(task_id: str, session: str) -> dict:
-    headers = {"Authorization": f"Bearer {session}"}
+    headers = {"X-Agent-Session-Token": session}
     r = requests.get(f"{CLAW_BASE}/claw/task",
-                     params={"taskId": task_id}, headers=headers, timeout=15)
+                      params={"taskId": task_id}, headers=headers, timeout=15)
     r.raise_for_status()
     return r.json()
 
@@ -137,7 +144,7 @@ def submit_task(task_id: str, address: str, deliverable: str, session: str) -> b
     """Submit deliverable proof. Returns True on success."""
     import hashlib
     proof_hash = hashlib.sha256(deliverable.encode()).hexdigest()
-    headers = {"Authorization": f"Bearer {session}"}
+    headers = {"X-Agent-Session-Token": session}
 
     # Try direct submission endpoint — fallback to generic
     for path in [f"/claw/task/{task_id}/submit", "/claw/submit"]:
@@ -149,6 +156,15 @@ def submit_task(task_id: str, address: str, deliverable: str, session: str) -> b
                     "workerAddress": address,
                     "deliverable": deliverable[:5000],   # truncate if very long
                     "proofHash": proof_hash
+                },
+                headers=headers,
+                timeout=30
+            )
+            print(f"[CE] Submit {task_id} via {path}: {r.status_code}")
+            if r.status_code in (200, 201):
+                return True
+        except Exception as e:
+            print(f"[CE] Submit error on {path}: {e}")              "proofHash": proof_hash
                 },
                 headers=headers,
                 timeout=30

@@ -71,7 +71,7 @@ def eth_sign_message(private_key_hex: str, message: str) -> str:
         from eth_account.messages import encode_defunct
         msg = encode_defunct(text=message)
         signed = Account.sign_message(msg, private_key=private_key_hex)
-        return signed.signature.hex()
+        return "0x" + signed.signature.hex()
     except ImportError:
         raise RuntimeError("eth_account not installed — run: pip install eth_account")
 

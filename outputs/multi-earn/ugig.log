@@ -403,3 +403,52 @@ RuntimeError: Failed to onboard or authenticate on ugig.net
 2026-06-26 14:53:34,463 [INFO] Skip Gig 64c127c0-2896-47a9-be27-29181ba7ff21 — score 0.0115 below 0.45 threshold
 2026-06-26 14:53:34,463 [INFO] Gig f9413983-d92a-4545-9207-8f9fe9f76cfa is already active/claimed. Skipping.
 2026-06-26 14:53:34,463 [INFO] ugig.net Earn Loop complete. Scored: 8, Processed/Submitted: 0
+2026-06-26 15:03:11,279 [INFO] [2026-06-26T15:03:11.278984] --- Starting ugig.net Earn Loop ---
+2026-06-26 15:03:11,279 [INFO] Using existing UGIG_API_KEY from bot.env
+2026-06-26 15:03:12,270 [INFO] State synced from remote: 1 active, 0 rejected.
+2026-06-26 15:03:14,502 [INFO] Fetched 50 unique gigs from ugig.net
+2026-06-26 15:03:14,502 [INFO] Scoring Gig: 'implement this PRD' ($72.545 USD)
+2026-06-26 15:03:14,510 [INFO] Gig 9c2046e0-0d27-4be2-966f-69addf8f1f22 score: 0.3212 (Category: coding, Complexity: hard)
+2026-06-26 15:03:14,511 [INFO] Skip Gig 9c2046e0-0d27-4be2-966f-69addf8f1f22 — score 0.3212 below 0.45 threshold
+2026-06-26 15:03:14,511 [INFO] Scoring Gig: 'I will pay 25 cents for bug fixes and $1 for features on any of my pinned GitHub repos' ($72.545 USD)
+2026-06-26 15:03:14,511 [INFO] Gig d9778d45-f0fc-46c7-a85f-710e20d928e2 score: 0.8488 (Category: coding, Complexity: hard)
+2026-06-26 15:03:14,511 [INFO] Generating solution for Gig d9778d45-f0fc-46c7-a85f-710e20d928e2...
+2026-06-26 15:03:19,879 [INFO] Solution generated (2816 chars)
+2026-06-26 15:03:19,879 [INFO] Applying / submitting deliverable to Gig d9778d45-f0fc-46c7-a85f-710e20d928e2...
+2026-06-26 15:03:20,328 [WARNING] Application failed: 400 - {"error":"Cover letter must be at most 2000 characters"}
+2026-06-26 15:03:20,328 [WARNING] Failed to apply to Gig d9778d45-f0fc-46c7-a85f-710e20d928e2
+2026-06-26 15:03:20,328 [INFO] Scoring Gig: 'need testers to submit bugs, and create PRs to fix our quantum resistant messaging app' ($54.4087 USD)
+2026-06-26 15:03:21,561 [WARNING] Failed to extract features with LLM: Unterminated string starting at: line 2 column 3 (char 4)
+2026-06-26 15:03:21,568 [INFO] Gig 0869aeda-374f-42bc-8b50-dc900ac89dfa score: 1.1018 (Category: other, Complexity: medium)
+2026-06-26 15:03:21,568 [INFO] Generating solution for Gig 0869aeda-374f-42bc-8b50-dc900ac89dfa...
+2026-06-26 15:03:34,187 [INFO] Solution generated (6400 chars)
+2026-06-26 15:03:34,188 [INFO] Applying / submitting deliverable to Gig 0869aeda-374f-42bc-8b50-dc900ac89dfa...
+2026-06-26 15:03:34,751 [WARNING] Application failed: 400 - {"error":"Cover letter must be at most 2000 characters"}
+2026-06-26 15:03:34,751 [WARNING] Failed to apply to Gig 0869aeda-374f-42bc-8b50-dc900ac89dfa
+2026-06-26 15:03:34,751 [INFO] Scoring Gig: 'will pay $1 USD for bugs reported and fixed with a PR' ($72.545 USD)
+2026-06-26 15:03:34,764 [INFO] Gig 14eb1fad-1c95-4ba9-bd6f-5b6f9de1a664 score: 0.2716 (Category: coding, Complexity: medium)
+2026-06-26 15:03:34,764 [INFO] Skip Gig 14eb1fad-1c95-4ba9-bd6f-5b6f9de1a664 — score 0.2716 below 0.45 threshold
+2026-06-26 15:03:34,764 [INFO] Scoring Gig: 'I will deliver one $5 microtask: code QA, bug report, script, or research brief' ($5.0 USD)
+2026-06-26 15:03:34,764 [INFO] Gig 5a5b8ca8-eaca-48bc-b13c-94dfd3c6239d score: 0.0926 (Category: other, Complexity: easy)
+2026-06-26 15:03:34,765 [INFO] Skip Gig 5a5b8ca8-eaca-48bc-b13c-94dfd3c6239d — score 0.0926 below 0.45 threshold
+2026-06-26 15:03:34,765 [INFO] Scoring Gig: 'I will write one difficult client reply for five dollars' ($5.0 USD)
+2026-06-26 15:03:34,765 [INFO] Gig 5400860d-a78c-45a3-8f4a-7ee85fa3071d score: 0.198 (Category: writing, Complexity: medium)
+2026-06-26 15:03:34,765 [INFO] Skip Gig 5400860d-a78c-45a3-8f4a-7ee85fa3071d — score 0.198 below 0.45 threshold
+2026-06-26 15:03:34,765 [INFO] Scoring Gig: 'IntelBot — Daily Intelligence Monitoring' ($10.0 USD)
+2026-06-26 15:03:34,765 [INFO] Gig 13563433-540d-4080-8cf7-f04f6bcce034 score: 0.0405 (Category: other, Complexity: easy)
+2026-06-26 15:03:34,766 [INFO] Skip Gig 13563433-540d-4080-8cf7-f04f6bcce034 — score 0.0405 below 0.45 threshold
+2026-06-26 15:03:34,766 [INFO] Scoring Gig: 'Need someone to test submit bugs and PRs to fix those bugs' ($72.545 USD)
+2026-06-26 15:03:34,766 [INFO] Gig abd6b2a0-e728-48cf-a46f-f99e419ed94e score: 0.2716 (Category: coding, Complexity: medium)
+2026-06-26 15:03:34,766 [INFO] Skip Gig abd6b2a0-e728-48cf-a46f-f99e419ed94e — score 0.2716 below 0.45 threshold
+2026-06-26 15:03:34,766 [INFO] Scoring Gig: 'I need more people to test the affiliate program (ie: Invite Friends) flow.' ($72.545 USD)
+2026-06-26 15:03:34,766 [INFO] Gig 4741218f-a723-46bb-82cb-6516120331ae score: 0.4074 (Category: coding, Complexity: medium)
+2026-06-26 15:03:34,766 [INFO] Skip Gig 4741218f-a723-46bb-82cb-6516120331ae — score 0.4074 below 0.45 threshold
+2026-06-26 15:03:34,766 [INFO] Scoring Gig: 'I will pay you to make an ask or an offer on d0rz.com (must be legit no fake spam shit)' ($72.545 USD)
+2026-06-26 15:03:34,767 [INFO] Gig cf21d32f-b505-407a-bc3b-624d8777ce68 score: 2.3505 (Category: other, Complexity: easy)
+2026-06-26 15:03:34,767 [INFO] Generating solution for Gig cf21d32f-b505-407a-bc3b-624d8777ce68...
+2026-06-26 15:03:38,370 [INFO] Solution generated (1798 chars)
+2026-06-26 15:03:38,370 [INFO] Applying / submitting deliverable to Gig cf21d32f-b505-407a-bc3b-624d8777ce68...
+2026-06-26 15:03:39,449 [INFO] Successfully applied to gig cf21d32f-b505-407a-bc3b-624d8777ce68. Application ID: 148ddd9d-d13a-4b06-ba6c-c00adac54fc7
+2026-06-26 15:03:41,758 [INFO] Git push completed.
+2026-06-26 15:03:46,759 [INFO] Reached maximum concurrent claims limit. Staggering rest.
+2026-06-26 15:03:46,759 [INFO] ugig.net Earn Loop complete. Scored: 10, Processed/Submitted: 1
