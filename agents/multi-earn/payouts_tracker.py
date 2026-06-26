@@ -322,7 +322,8 @@ def is_category_busy(category: str, current_job_id: str = None) -> bool:
     for p in payouts:
         # Check active states
         if p.get("category", "").lower().strip() == category.lower().strip():
-            if p.get("status") in ("pending", "applied", "accepted", "submitted"):
+            status = str(p.get("status", "")).lower().strip()
+            if any(x in status for x in ("pending", "applied", "accepted", "submitted")):
                 # Ignore checking the current job's own lock
                 if current_job_id and str(p.get("job_id")) == str(current_job_id):
                     continue
