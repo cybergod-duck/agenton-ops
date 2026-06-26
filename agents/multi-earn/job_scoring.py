@@ -125,12 +125,48 @@ Format the output as raw JSON only. Do not add markdown or code fences.
     }
 
 # ── Score Computation ─────────────────────────────────────────────────────────
+def get_historical_rates(platform: str, category: str) -> tuple[float, float]:
+    """Retrieve historical accept rates and realized payout ratios for this category/platform."""
+    payouts_file = Path(r"C:\BC RESEARCH\AI_FACTORY\AgentOn\outputs\multi-earn\payouts.json")
+    if not payouts_file.exists():
+        return 1.0, 1.0
+    try:
+        data = json.loads(payouts_file.read_text(encoding="utf-8"))
+    except Exception:
+        return 1.0, 1.0
+        
+    def is_resolved(status: str) -> bool:
+        s = str(status).lower().strip()
+        return any(x in s for x in ("paid", "completed", "rejected", "failed", "success", "approved"))
+        
+    def is_accepted(status: str) -> bool:
+        s = str(status).lower().strip()
+        return any(x in s for x in ("paid", "completed", "accepted", "success", "approved"))
+
+    resolved_jobs = [p for p in data if p.get("platform", "").lower() == platform.lower()
+                     and p.get("category", "").lower() == category.lower()
+                     and is_resolved(p.get("status", ""))]
+    accepted_jobs = [p for p in resolved_jobs if is_accepted(p.get("status", ""))]
+    
+    accept_rate = 1.0
+    if resolved_jobs:
+        accept_rate = len(accepted_jobs) / len(resolved_jobs)
+        
+    platform_resolved_jobs = [p for p in data if p.get("platform", "").lower() == platform.lower()
+                              and is_resolved(p.get("status", ""))]
+    platform_paid_jobs = [p for p in platform_resolved_jobs if is_accepted(p.get("status", ""))]
+    
+    realized_ratio = 1.0
+    if platform_resolved_jobs:
+        promised_sum = sum(float(p.get("reward_usd", 0)) for p in platform_resolved_jobs)
+        paid_sum = sum(float(p.get("reward_usd", 0)) for p in platform_paid_jobs)
+        if promised_sum > 0:
+            realized_ratio = paid_sum / promised_sum
+            
+    return round(accept_rate, 4), round(realized_ratio, 4)
+
 def calculate_score(job: Job) -> float:
     # 1. Platform Trust
-    # DealWork is fully verified and stable -> 1.2
-    # BountyBook is stable -> 1.0
-    # Claw Earn has on-chain staking and manual verification friction -> 0.9
-    # ugig is a standard Supabase marketplace -> 1.0
     platform_trusts = {
         "dealwork": 1.2,
         "bountybook": 1.0,
@@ -141,7 +177,6 @@ def calculate_score(job: Job) -> float:
     p_trust = platform_trusts.get(job.platform.lower(), 1.0)
     
     # 2. Fit Weight
-    # Coding, AI, and data extraction/processing tasks have the highest automation fit
     fit_weights = {
         "coding": 1.3,
         "code": 1.3,
@@ -157,7 +192,12 @@ def calculate_score(job: Job) -> float:
     
     # 3. Score Formula
     est_mins = job.estimated_minutes if job.estimated_minutes else 15
-    score = (job.reward_usd / (est_mins + 5)) * (1.0 - job.ambiguity) * p_trust * f_weight
+    base_score = (job.reward_usd / (est_mins + 5)) * (1.0 - job.ambiguity) * p_trust * f_weight
+    
+    # Apply outcome-aware win-rate multipliers
+    accept_rate, realized_ratio = get_historical_rates(job.platform, job.category)
+    score = base_score * (0.5 + 0.5 * accept_rate) * realized_ratio
+    
     return round(score, 4)
 
 def score_job(job: Job, openrouter_key: str) -> tuple[float, Job]:

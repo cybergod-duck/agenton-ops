@@ -421,6 +421,18 @@
       <div class="kpi-value kpi-cyan" id="kpi-telegram">—</div>
       <div class="kpi-sub">Today</div>
     </div>
+    <div class="kpi-card" style="--kpi-color: linear-gradient(90deg,#00f5a0,#7c3aed)">
+      <div class="kpi-icon">⏱️</div>
+      <div class="kpi-label">Implied Hourly Rate</div>
+      <div class="kpi-value" style="color:var(--accent)" id="kpi-hourly">—</div>
+      <div class="kpi-sub">Based on earned tasks</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color: linear-gradient(90deg,#7c3aed,#ff4757)">
+      <div class="kpi-icon">📅</div>
+      <div class="kpi-label">24h Expected/Earned</div>
+      <div class="kpi-value" style="color:#a78bfa" id="kpi-24h">—</div>
+      <div class="kpi-sub">Expected vs Earned</div>
+    </div>
   </div>
 
   <!-- Projection Cards -->
@@ -1060,6 +1072,13 @@ async function fetchAndRender() {
     document.getElementById('kpi-monthly').textContent = '$' + (p.monthly || 0).toFixed(2);
     document.getElementById('kpi-twitter').textContent = data.twitter_calls_today || 0;
     document.getElementById('kpi-telegram').textContent = data.telegram_actions_today || 0;
+
+    // Efficiency Analytics KPIs
+    const eff = data.efficiency || {};
+    document.getElementById('kpi-hourly').textContent = '$' + (eff.hourly_rate || 0).toFixed(2) + '/hr';
+    const expectedSum = Object.values(eff.expected_24h || {}).reduce((a,b) => a+b, 0);
+    const earnedSum = Object.values(eff.earned_24h || {}).reduce((a,b) => a+b, 0);
+    document.getElementById('kpi-24h').textContent = '$' + earnedSum.toFixed(0) + ' / $' + expectedSum.toFixed(0);
 
     // Projections
     const factor = p.expansion_factor || 1;

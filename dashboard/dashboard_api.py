@@ -184,14 +184,152 @@ def parse_ugig_payouts() -> list[dict]:
     return result
 
 def get_all_earnings() -> list[dict]:
-    """Combine all platform earnings into one list."""
+    """Combine all platform earnings into one list, merging payouts.json with legacy markdown fallbacks."""
     all_earnings = []
+    
+    # 1. Read from new structured payouts.json first
+    payouts_file = MULTI_EARN / "payouts.json"
+    payouts_by_id = set()
+    
+    if payouts_file.exists():
+        try:
+            payouts = json.loads(payouts_file.read_text(encoding="utf-8"))
+            for p in payouts:
+                p_key = (p.get("platform"), str(p.get("job_id")))
+                payouts_by_id.add(p_key)
+                
+                # We count only "accepted", "paid", or "completed" as earnings
+                if p.get("status") in ("paid", "completed", "accepted", "submitted", "applied"):
+                    # Parse date safely
+                    created_str = p.get("created_at")[:10] if p.get("created_at") else ""
+                    all_earnings.append({
+                        "date": created_str,
+                        "title": p.get("title", "Unknown"),
+                        "reward": float(p.get("reward_usd", 0.0)),
+                        "platform": p.get("platform", "Unknown"),
+                        "status": p.get("status", "paid")
+                    })
+        except Exception as e:
+            print(f"[dashboard_api] Error loading payouts.json: {e}")
+            
+    # 2. Add legacy markdown payouts as fallbacks if not already tracked in payouts.json
     all_earnings.extend(get_agenton_submissions())
-    all_earnings.extend(get_platform_payouts("BountyBook", "bountybook-payouts.md"))
-    all_earnings.extend(get_platform_payouts("Claw Earn", "claw-earn-payouts.md"))
-    all_earnings.extend(parse_dealwork_payouts())
-    all_earnings.extend(parse_ugig_payouts())
+    
+    # BountyBook
+    for e in get_platform_payouts("BountyBook", "bountybook-payouts.md"):
+        if not any(ae["platform"] == "BountyBook" and ae["title"] == e["title"] for ae in all_earnings):
+            all_earnings.append(e)
+            
+    # Claw Earn
+    for e in get_platform_payouts("Claw Earn", "claw-earn-payouts.md"):
+        if not any(ae["platform"] == "Claw Earn" and ae["title"] == e["title"] for ae in all_earnings):
+            all_earnings.append(e)
+            
+    # DealWork
+    for e in parse_dealwork_payouts():
+        if not any(ae["platform"] == "dealwork" and ae["title"] == e["title"] for ae in all_earnings):
+            all_earnings.append(e)
+            
+    # ugig
+    for e in parse_ugig_payouts():
+        if not any(ae["platform"] == "ugig.net" and ae["title"] == e["title"] for ae in all_earnings):
+            all_earnings.append(e)
+            
     return [e for e in all_earnings if e["reward"] > 0]
+
+def calculate_efficiency() -> dict:
+    """Calculate expected vs earned 24h totals, success rates, and implied hourly rate."""
+    payouts_file = MULTI_EARN / "payouts.json"
+    if not payouts_file.exists():
+        return {
+            "expected_24h": {}, "earned_24h": {}, "hourly_rate": 0.0,
+            "success_rate_by_platform": {}, "success_rate_by_category": {}
+        }
+        
+    try:
+        payouts = json.loads(payouts_file.read_text(encoding="utf-8"))
+    except Exception:
+        payouts = []
+        
+    # Python datetimes are offset-naive or offset-aware, let's use naive in local or UTC safely
+    now = datetime.now(timezone.utc) if 'timezone' in globals() or 'timezone' in locals() else datetime.utcnow()
+    one_day_ago = now - timedelta(hours=24)
+    
+    expected_24h = {}
+    earned_24h = {}
+    total_earned = 0.0
+    total_estimated_minutes = 0
+    
+    # Success rates counts
+    platform_total = {}
+    platform_success = {}
+    category_total = {}
+    category_success = {}
+    
+    for p in payouts:
+        platform = p.get("platform", "Unknown")
+        category = p.get("category", "other") or "other"
+        status = p.get("status", "pending")
+        reward = p.get("reward_usd", 0.0)
+        est_mins = p.get("estimated_minutes") or 15
+        
+        # Parse timestamp (handle timezone offsets)
+        created_str = p.get("created_at")
+        is_last_24h = False
+        if created_str:
+            try:
+                # Remove Z or offset for naive comparison or parse with ISO format if datetime supports it
+                # Under python 3.11+ fromisoformat handles offsets automatically
+                created = datetime.fromisoformat(created_str.replace('Z', '+00:00'))
+                if created.tzinfo is None:
+                    # Make naive if local comparison is naive
+                    created = created.replace(tzinfo=timezone.utc)
+                if created > now.replace(tzinfo=timezone.utc):
+                    # Safely handle future timestamps
+                    created = now.replace(tzinfo=timezone.utc)
+                if created > one_day_ago.replace(tzinfo=timezone.utc):
+                    is_last_24h = True
+            except Exception as e:
+                print(f"[dashboard_api] Timestamp parse error for {created_str}: {e}")
+                
+        # 24h expected and earned
+        if is_last_24h:
+            expected_24h[platform] = expected_24h.get(platform, 0.0) + reward
+            if status in ("paid", "completed", "accepted"):
+                earned_24h[platform] = earned_24h.get(platform, 0.0) + reward
+                
+        # Hourly rate (only for accepted/paid/completed jobs where we earned)
+        if status in ("paid", "completed", "accepted"):
+            total_earned += reward
+            total_estimated_minutes += est_mins
+            
+        # Success rate by platform/category (for resolved jobs)
+        if status in ("paid", "completed", "accepted", "rejected", "failed"):
+            platform_total[platform] = platform_total.get(platform, 0) + 1
+            category_total[category] = category_total.get(category, 0) + 1
+            if status in ("paid", "completed", "accepted"):
+                platform_success[platform] = platform_success.get(platform, 0) + 1
+                category_success[category] = category_success.get(category, 0) + 1
+                
+    hourly_rate = 0.0
+    if total_estimated_minutes > 0:
+        hourly_rate = total_earned / (total_estimated_minutes / 60)
+        
+    success_rate_by_platform = {}
+    for plat, tot in platform_total.items():
+        success_rate_by_platform[plat] = round(platform_success.get(plat, 0) / tot, 2)
+        
+    success_rate_by_category = {}
+    for cat, tot in category_total.items():
+        success_rate_by_category[cat] = round(category_success.get(cat, 0) / tot, 2)
+        
+    return {
+        "expected_24h": expected_24h,
+        "earned_24h": earned_24h,
+        "hourly_rate": round(hourly_rate, 2),
+        "success_rate_by_platform": success_rate_by_platform,
+        "success_rate_by_category": success_rate_by_category
+    }
 
 def get_twitter_calls_today() -> int:
     rows = parse_md_table(TW_USAGE)
@@ -319,6 +457,8 @@ def api_summary():
         p = e["platform"]
         by_platform[p] = by_platform.get(p, 0) + e["reward"]
 
+    efficiency = calculate_efficiency()
+
     return jsonify({
         "projections": projections,
         "completed_quests": count_completed_quests(),
@@ -333,6 +473,7 @@ def api_summary():
         "platform_breakdown": by_platform,
         "recent_submissions": sorted(earnings, key=lambda x: x["date"], reverse=True)[:20],
         "scheduler": get_scheduler_status(),
+        "efficiency": efficiency,
         "last_updated": datetime.now().isoformat(),
     })
 

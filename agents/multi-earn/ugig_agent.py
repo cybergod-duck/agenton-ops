@@ -23,6 +23,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from job_scoring import Job, score_job, LLM_MODEL, LLM_API_BASE
 from ugig_client import UgigClient
 from prompt_templates import get_template
+from payouts_tracker import record_payout, is_category_busy
 
 # ── Config & Paths ────────────────────────────────────────────────────────────
 BOT_ENV_PATH    = Path(r"C:\BC RESEARCH\AI_FACTORY\bot.env")
@@ -231,6 +232,17 @@ def log_payout(job: Job, status: str = "Pending approval"):
     )
     with PAYOUTS_MD.open("a", encoding="utf-8") as fh:
         fh.write(entry)
+        
+    # Write to unified json
+    record_payout(
+        platform="ugig.net",
+        job_id=job.id,
+        title=job.title,
+        category=job.category,
+        reward_usd=job.reward_usd,
+        status=status,
+        estimated_minutes=job.estimated_minutes
+    )
 
 # ── Git Sync ──────────────────────────────────────────────────────────────────
 def git_sync(quest_title: str):
@@ -247,9 +259,6 @@ def git_sync(quest_title: str):
 
 # ── Outcome Tracking ──────────────────────────────────────────────────────────
 def update_payouts_status(client: UgigClient):
-    if not PAYOUTS_MD.exists():
-        return
-    
     my_apps = client.list_my_applications()
     if not my_apps:
         return
@@ -267,6 +276,23 @@ def update_payouts_status(client: UgigClient):
             display_status = f"{status}"
         gig_to_status[str(gid)] = display_status
         
+        # Sync each application to payouts.json
+        try:
+            gig_data = app.get("gig", {})
+            record_payout(
+                platform="ugig.net",
+                job_id=str(gid),
+                title=gig_data.get("title", "Unknown"),
+                category=gig_data.get("category", "other") or "other",
+                reward_usd=float(app.get("proposed_rate") or gig_data.get("budget_max") or 0.0),
+                status=display_status
+            )
+        except Exception as e:
+            log.warning(f"Failed to record payouts.json for gig {gid}: {e}")
+            
+    if not PAYOUTS_MD.exists():
+        return
+        
     content = PAYOUTS_MD.read_text(encoding="utf-8")
     updated = False
     
@@ -279,6 +305,7 @@ def update_payouts_status(client: UgigClient):
         title_match = re.search(r"\[(.*?)\]\s*—\s*Gig\s*`(.*?)`", block)
         if title_match:
             gid = title_match.group(2)
+            title = title_match.group(1)
             if gid in gig_to_status:
                 new_status = gig_to_status[gid]
                 status_match = re.search(r"-\s+\*\*Status\*\*:\s*(.*?)\n", block)
@@ -386,6 +413,10 @@ def main():
             log.info(f"Gig {jid} score: {score} (Category: {evaluated_job.category}, Complexity: {evaluated_job.complexity})")
             scored_count += 1
             
+            if is_category_busy(evaluated_job.category, jid):
+                log.info(f"Skip Gig {jid} — category '{evaluated_job.category}' is currently busy with another active job.")
+                continue
+                
             if score < UGIG_MIN_SCORE:
                 log.info(f"Skip Gig {jid} — score {score} below {UGIG_MIN_SCORE} threshold")
                 continue

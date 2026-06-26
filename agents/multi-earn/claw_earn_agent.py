@@ -26,6 +26,8 @@ from datetime import datetime
 # Add multi-earn dir to path for imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from job_scoring import Job, score_job
+from prompt_templates import get_template
+from payouts_tracker import record_payout, is_category_busy
 
 ROOT_DIR        = r"C:\BC RESEARCH\AI_FACTORY"
 AGENTON_DIR     = os.path.join(ROOT_DIR, "AgentOn")
@@ -128,20 +130,13 @@ def fetch_task_detail(task_id: str, session: str) -> dict:
 
 
 # ── LLM Execution ─────────────────────────────────────────────────────────────
-def execute_task_with_llm(task: dict, keys: dict) -> str | None:
-    title        = task.get("title", "")
-    requirements = task.get("requirements", task.get("description", ""))
-    category     = task.get("category", task.get("type", "general"))
-
-    prompt = f"""You are a professional AI agent completing a paid gig task.
-
-Task Title: {title}
-Category: {category}
-Requirements: {requirements}
-
-Complete this task thoroughly and professionally. Return ONLY the deliverable content — 
-no preamble, no meta-commentary, just the finished work the buyer asked for.
-Make it high quality, original, and directly useful."""
+def execute_task_with_llm(job: Job, keys: dict) -> str | None:
+    template = get_template(job.category)
+    prompt = template.format(
+        title=job.title,
+        reward=job.reward_usd,
+        description=job.description
+    )
 
     or_key = keys.get("OPENROUTER_API_KEY")
     if not or_key:
@@ -314,17 +309,24 @@ def main():
         try:
             score, evaluated_job = score_job(job_obj, keys.get("OPENROUTER_API_KEY"))
             print(f"[CE] Task {task_id} scored: {score} (Category: {evaluated_job.category}, Complexity: {evaluated_job.complexity}, Ambiguity: {evaluated_job.ambiguity})")
+            
+            # Check cross-agent category busy lock
+            if is_category_busy(evaluated_job.category, str(task_id)):
+                print(f"[CE] Skip task {task_id} — category '{evaluated_job.category}' is currently busy with another active job.")
+                continue
+                
             if score < 0.4:
                 print(f"[CE] Skip {task_id} — score {score} is below threshold 0.4")
                 log_submission(task_id, title, reward, "skipped", f"Score {score} too low")
                 continue
         except Exception as e:
             print(f"[CE] Scoring failed for {task_id}: {e}")
+            continue
 
         print(f"\n[CE] Processing task '{title}' (${reward:.2f}, {category})")
 
         # Execute with LLM
-        deliverable = execute_task_with_llm(detail, keys)
+        deliverable = execute_task_with_llm(evaluated_job, keys)
         if not deliverable:
             print(f"[CE] LLM failed for {task_id} — skip")
             log_submission(task_id, title, reward, "skipped", "LLM failed")
@@ -336,6 +338,18 @@ def main():
             print(f"[CE] ✅ Submitted task {task_id}")
             log_submission(task_id, title, reward, "submitted", "48h auto-approve pending")
             log_payout(f"Claw Earn: {title[:40]}", reward, f"Task {task_id}")
+            
+            # Record payout to unified telemetry
+            record_payout(
+                platform="claw earn",
+                job_id=str(task_id),
+                title=title,
+                category=evaluated_job.category,
+                reward_usd=reward,
+                status="submitted",
+                notes="48h auto-approve pending"
+            )
+            
             submitted += 1
             earned_est += reward
         else:

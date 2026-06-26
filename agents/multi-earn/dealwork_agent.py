@@ -35,6 +35,8 @@ import requests
 # Add multi-earn dir to path for imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from job_scoring import Job, score_job
+from prompt_templates import get_template
+from payouts_tracker import record_payout, is_category_busy
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Constants
@@ -347,12 +349,12 @@ def ensure_output_dir() -> None:
             )
 
 
-def log_submission(job: dict, deliverable: str) -> None:
+def log_submission(job: Job, deliverable: str) -> None:
     ts  = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-    jid = job.get("id", "unknown")
-    ttl = job.get("title", "Untitled")
-    bgt = parse_budget(job)
-    cur = job.get("currency", "USDC")
+    jid = job.id
+    ttl = job.title
+    bgt = job.reward_usd
+    cur = "USDC"
     preview = (deliverable[:300] + "…") if len(deliverable) > 300 else deliverable
 
     entry = (
@@ -366,12 +368,12 @@ def log_submission(job: dict, deliverable: str) -> None:
         fh.write(entry)
 
 
-def log_payout(job: dict, response: dict) -> None:
+def log_payout(job: Job, response: dict) -> None:
     ts     = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-    jid    = job.get("id", "unknown")
-    ttl    = job.get("title", "Untitled")
-    bgt    = parse_budget(job)
-    cur    = job.get("currency", "USDC")
+    jid    = job.id
+    ttl    = job.title
+    bgt    = job.reward_usd
+    cur    = "USDC"
     status = response.get("status", "unknown")
     payout = response.get("payout") or response.get("amount") or bgt
     tx     = response.get("tx_hash") or response.get("transaction") or "pending"
@@ -385,6 +387,46 @@ def log_payout(job: dict, response: dict) -> None:
     )
     with PAYOUTS_MD.open("a", encoding="utf-8") as fh:
         fh.write(entry)
+
+    # Log to unified payouts database
+    record_payout(
+        platform="dealwork",
+        job_id=str(jid),
+        title=ttl,
+        category=job.category,
+        reward_usd=float(payout),
+        status=status,
+        estimated_minutes=job.estimated_minutes,
+        notes=f"TX: {tx}"
+    )
+
+
+def sync_payout_statuses(jobs: list[dict]):
+    """Sync remote state of our dealwork jobs into payouts.json."""
+    payouts_file = OUTPUT_DIR / "payouts.json"
+    if not payouts_file.exists():
+        return
+    try:
+        payouts = json.loads(payouts_file.read_text(encoding="utf-8"))
+    except Exception:
+        return
+        
+    known_ids = {str(p.get("job_id")) for p in payouts if p.get("platform") == "dealwork"}
+    if not known_ids:
+        return
+        
+    for j in jobs:
+        jid = str(j.get("id"))
+        if jid in known_ids:
+            status = j.get("status", "unknown")
+            record_payout(
+                platform="dealwork",
+                job_id=jid,
+                title=j.get("title", ""),
+                category=j.get("type", "other") or "other",
+                reward_usd=parse_budget(j),
+                status=status
+            )
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -514,15 +556,15 @@ def filter_jobs(jobs: list[dict], attempted: set[str], agent_id: str) -> list[di
 # ─────────────────────────────────────────────────────────────────────────────
 # Core earn loop
 # ─────────────────────────────────────────────────────────────────────────────
-def process_job(client: DealworkClient, job: dict, openrouter_key: str) -> bool:
+def process_job(client: DealworkClient, job_obj: Job, openrouter_key: str) -> bool:
     """
     Claim → generate deliverable → deliver.
     Returns True on success, False on any failure.
     """
-    jid   = job.get("id")
-    title = job.get("title", "Untitled")
-    bgt   = parse_budget(job)
-    cur   = job.get("currency", "USDC")
+    jid   = job_obj.id
+    title = job_obj.title
+    bgt   = job_obj.reward_usd
+    cur   = "USDC"
 
     log.info("── Processing job %s | '%s' | %.2f %s ──", jid, title, bgt, cur)
 
@@ -544,8 +586,13 @@ def process_job(client: DealworkClient, job: dict, openrouter_key: str) -> bool:
     except Exception:
         pass  # Chat is best-effort
 
-    # 3. Generate deliverable
-    prompt = build_prompt(job)
+    # 3. Generate deliverable using template
+    template = get_template(job_obj.category)
+    prompt = template.format(
+        title=job_obj.title,
+        reward=job_obj.reward_usd,
+        description=job_obj.description
+    )
     try:
         deliverable = llm_generate(prompt, openrouter_key)
         log.info("Deliverable generated (%d chars) for job %s", len(deliverable), jid)
@@ -570,8 +617,8 @@ def process_job(client: DealworkClient, job: dict, openrouter_key: str) -> bool:
         return False
 
     # 5. Log
-    log_submission(job, deliverable)
-    log_payout(job, deliver_resp)
+    log_submission(job_obj, deliverable)
+    log_payout(job_obj, deliver_resp)
 
     # 6. Post completion message
     try:
@@ -601,6 +648,8 @@ def earn_loop(
 
         try:
             jobs = fetch_jobs(client)
+            # Sync remote state of known jobs to payouts.json
+            sync_payout_statuses(jobs)
         except Exception as exc:
             log.error("Failed to fetch jobs: %s", exc)
             jobs = []
@@ -626,13 +675,20 @@ def earn_loop(
             try:
                 score, evaluated_job = score_job(job_obj, openrouter_key)
                 log.info("Job %s scored: %s (Category: %s, Complexity: %s, Ambiguity: %s)", jid, score, evaluated_job.category, evaluated_job.complexity, evaluated_job.ambiguity)
+                
+                # Check cross-agent category busy lock
+                if is_category_busy(evaluated_job.category, str(jid)):
+                    log.info("Skip job %s — category '%s' is currently busy with another active job.", jid, evaluated_job.category)
+                    continue
+                    
                 if score < 0.4:
                     log.info("Skip job %s — score %s is below threshold 0.4", jid, score)
                     continue
             except Exception as e:
                 log.error("Scoring failed for job %s: %s", jid, e)
+                continue
 
-            success = process_job(client, job, openrouter_key)
+            success = process_job(client, evaluated_job, openrouter_key)
             if success:
                 submitted_this_loop += 1
                 time.sleep(SUBMIT_DELAY)

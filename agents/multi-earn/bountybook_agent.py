@@ -28,6 +28,8 @@ from pathlib import Path
 # Add multi-earn dir to path for imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from job_scoring import Job, score_job
+from prompt_templates import get_template
+from payouts_tracker import record_payout, is_category_busy
 
 # ── Config ────────────────────────────────────────────────────────────────────
 ROOT_DIR       = r"C:\BC RESEARCH\AI_FACTORY"
@@ -140,25 +142,20 @@ def clean_json(text: str) -> str:
         text = text[:-3]
     return text.strip()
 
-def execute_job_with_llm(job: dict, keys: dict) -> dict | None:
+def execute_job_with_llm(job: dict, keys: dict, category: str) -> dict | None:
     """Use LLM to generate a deliverable for a BountyBook job."""
     title = job.get("title", "")
     desc  = job.get("description", "")
     spec  = job.get("spec", {})
     instructions    = spec.get("instructions", desc)
-    success_cond    = spec.get("success_condition", "Complete the task accurately.")
     submission_fmt  = job.get("submissionFormat", "text")
 
-    prompt = f"""You are an autonomous AI agent completing a paid bounty task.
-
-Task Title: {title}
-Instructions: {instructions}
-Success Condition: {success_cond}
-Output Format Required: {submission_fmt}
-
-Complete the task and return your output. If the format is "json", return a valid JSON object.
-If "text", return plain text. Be accurate, concise, and complete.
-Do NOT add preamble or explanation — return the deliverable only."""
+    template = get_template(category)
+    prompt = template.format(
+        title=title,
+        reward=job.get("budget_usdc") or job.get("budget") or 0.0,
+        description=instructions
+    )
 
     or_key = keys.get("OPENROUTER_API_KEY")
     if not or_key:
@@ -359,18 +356,25 @@ def main():
             try:
                 score, evaluated_job = score_job(job_obj, keys.get("OPENROUTER_API_KEY"))
                 print(f"[BB] Job {job_id} scored: {score} (Category: {evaluated_job.category}, Complexity: {evaluated_job.complexity}, Ambiguity: {evaluated_job.ambiguity})")
+                
+                # Check cross-agent category busy lock
+                if is_category_busy(evaluated_job.category, str(job_id)):
+                    print(f"[BB] Skip {job_id} — category '{evaluated_job.category}' is currently busy with another active job.")
+                    continue
+                    
                 if score < 0.4:
                     print(f"[BB] Skip {job_id} — score {score} is below threshold 0.4")
                     log_submission(job_id, title, budget, "skipped", f"Score {score} too low")
                     continue
             except Exception as e:
                 print(f"[BB] Scoring failed for {job_id}: {e}")
+                continue
 
             print(f"\n[BB] Processing: '{title}' (${budget:.2f} USDC, {category})")
 
             # Execute with LLM
             print(f"[BB] Running LLM to generate deliverable...")
-            output = execute_job_with_llm(full_job, keys)
+            output = execute_job_with_llm(full_job, keys, evaluated_job.category)
             if not output:
                 print(f"[BB] LLM failed for {job_id} — skipping")
                 log_submission(job_id, title, budget, "skipped", "LLM execution failed")
@@ -389,6 +393,19 @@ def main():
                 print(f"[BB] ✅ Submitted job {job_id} — awaiting oracle verification")
                 log_submission(job_id, title, budget, "submitted", f"Oracle pending | budget ${budget:.2f}")
                 log_payout(f"BountyBook: {title[:40]}", budget * 0.96, f"Job {job_id} | 4% platform fee")
+                
+                # Record payout to unified telemetry
+                record_payout(
+                    platform="bountybook",
+                    job_id=str(job_id),
+                    title=title,
+                    category=evaluated_job.category,
+                    reward_usd=budget * 0.96,
+                    status="submitted",
+                    estimated_minutes=evaluated_job.estimated_minutes,
+                    notes="Oracle pending | 4% platform fee"
+                )
+                
                 submitted_count += 1
                 earned_estimate += budget * 0.96
             else:
