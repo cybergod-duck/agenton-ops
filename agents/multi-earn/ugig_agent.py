@@ -37,7 +37,7 @@ STATE_FILE      = OUTPUT_DIR / "ugig_state.json"
 BUDGET_MIN      = 5.0    # USD
 BUDGET_MAX      = 100.0  # USD
 UGIG_MIN_SCORE  = 0.45   # Minimum score for auto-claim
-MAX_ACTIVE_CLAIMS = 2    # Max concurrent active claims
+MAX_ACTIVE_CLAIMS = 3    # Max concurrent active claims
 CAPABILITIES    = ["writing", "research", "code", "data"]
 SUBMIT_DELAY    = 5
 

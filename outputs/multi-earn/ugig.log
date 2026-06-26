@@ -452,3 +452,58 @@ RuntimeError: Failed to onboard or authenticate on ugig.net
 2026-06-26 15:03:41,758 [INFO] Git push completed.
 2026-06-26 15:03:46,759 [INFO] Reached maximum concurrent claims limit. Staggering rest.
 2026-06-26 15:03:46,759 [INFO] ugig.net Earn Loop complete. Scored: 10, Processed/Submitted: 1
+2026-06-26 15:14:01,694 [INFO] [2026-06-26T15:14:01.694188] --- Starting ugig.net Earn Loop ---
+2026-06-26 15:14:01,694 [INFO] Using existing UGIG_API_KEY from bot.env
+2026-06-26 15:14:02,592 [INFO] State synced from remote: 2 active, 0 rejected.
+2026-06-26 15:14:04,583 [INFO] Fetched 50 unique gigs from ugig.net
+2026-06-26 15:14:04,583 [INFO] Scoring Gig: 'implement this PRD' ($73.165 USD)
+2026-06-26 15:14:04,589 [INFO] Gig 9c2046e0-0d27-4be2-966f-69addf8f1f22 score: 0.3239 (Category: coding, Complexity: hard)
+2026-06-26 15:14:04,589 [INFO] Skip Gig 9c2046e0-0d27-4be2-966f-69addf8f1f22 — score 0.3239 below 0.45 threshold
+2026-06-26 15:14:04,589 [INFO] Scoring Gig: 'I will pay 25 cents for bug fixes and $1 for features on any of my pinned GitHub repos' ($73.165 USD)
+2026-06-26 15:14:04,590 [INFO] Gig d9778d45-f0fc-46c7-a85f-710e20d928e2 score: 0.856 (Category: coding, Complexity: hard)
+2026-06-26 15:14:04,590 [INFO] Generating solution for Gig d9778d45-f0fc-46c7-a85f-710e20d928e2...
+2026-06-26 15:14:12,086 [INFO] Solution generated (4349 chars)
+2026-06-26 15:14:12,086 [INFO] Applying / submitting deliverable to Gig d9778d45-f0fc-46c7-a85f-710e20d928e2...
+2026-06-26 15:14:12,409 [WARNING] Application failed: 400 - {"error":"Cover letter must be at most 2000 characters"}
+2026-06-26 15:14:12,410 [WARNING] Failed to apply to Gig d9778d45-f0fc-46c7-a85f-710e20d928e2
+2026-06-26 15:14:12,410 [INFO] Scoring Gig: 'need testers to submit bugs, and create PRs to fix our quantum resistant messaging app' ($54.8738 USD)
+2026-06-26 15:14:12,418 [INFO] Gig 0869aeda-374f-42bc-8b50-dc900ac89dfa score: 1.1112 (Category: other, Complexity: medium)
+2026-06-26 15:14:12,418 [INFO] Skip Gig 0869aeda-374f-42bc-8b50-dc900ac89dfa — category 'other' is currently busy with another active job.
+2026-06-26 15:14:12,418 [INFO] Scoring Gig: 'will pay $1 USD for bugs reported and fixed with a PR' ($73.165 USD)
+2026-06-26 15:14:12,419 [INFO] Gig 14eb1fad-1c95-4ba9-bd6f-5b6f9de1a664 score: 0.2739 (Category: coding, Complexity: medium)
+2026-06-26 15:14:12,419 [INFO] Skip Gig 14eb1fad-1c95-4ba9-bd6f-5b6f9de1a664 — score 0.2739 below 0.45 threshold
+2026-06-26 15:14:12,419 [INFO] Scoring Gig: 'I will deliver one $5 microtask: code QA, bug report, script, or research brief' ($5.0 USD)
+2026-06-26 15:14:12,420 [INFO] Gig 5a5b8ca8-eaca-48bc-b13c-94dfd3c6239d score: 0.0926 (Category: other, Complexity: easy)
+2026-06-26 15:14:12,420 [INFO] Skip Gig 5a5b8ca8-eaca-48bc-b13c-94dfd3c6239d — category 'other' is currently busy with another active job.
+2026-06-26 15:14:12,420 [INFO] Scoring Gig: 'I will write one difficult client reply for five dollars' ($5.0 USD)
+2026-06-26 15:14:12,421 [INFO] Gig 5400860d-a78c-45a3-8f4a-7ee85fa3071d score: 0.198 (Category: writing, Complexity: medium)
+2026-06-26 15:14:12,421 [INFO] Skip Gig 5400860d-a78c-45a3-8f4a-7ee85fa3071d — score 0.198 below 0.45 threshold
+2026-06-26 15:14:12,421 [INFO] Scoring Gig: 'IntelBot — Daily Intelligence Monitoring' ($10.0 USD)
+2026-06-26 15:14:12,422 [INFO] Gig 13563433-540d-4080-8cf7-f04f6bcce034 score: 0.0405 (Category: other, Complexity: easy)
+2026-06-26 15:14:12,422 [INFO] Skip Gig 13563433-540d-4080-8cf7-f04f6bcce034 — category 'other' is currently busy with another active job.
+2026-06-26 15:14:12,422 [INFO] Scoring Gig: 'Need someone to test submit bugs and PRs to fix those bugs' ($73.165 USD)
+2026-06-26 15:14:12,423 [INFO] Gig abd6b2a0-e728-48cf-a46f-f99e419ed94e score: 0.2739 (Category: coding, Complexity: medium)
+2026-06-26 15:14:12,423 [INFO] Skip Gig abd6b2a0-e728-48cf-a46f-f99e419ed94e — score 0.2739 below 0.45 threshold
+2026-06-26 15:14:12,424 [INFO] Scoring Gig: 'I need more people to test the affiliate program (ie: Invite Friends) flow.' ($73.165 USD)
+2026-06-26 15:14:12,424 [INFO] Gig 4741218f-a723-46bb-82cb-6516120331ae score: 0.4109 (Category: coding, Complexity: medium)
+2026-06-26 15:14:12,425 [INFO] Skip Gig 4741218f-a723-46bb-82cb-6516120331ae — score 0.4109 below 0.45 threshold
+2026-06-26 15:14:12,425 [INFO] Gig cf21d32f-b505-407a-bc3b-624d8777ce68 is already active/claimed. Skipping.
+2026-06-26 15:14:12,425 [INFO] Scoring Gig: 'need PRs that implement the 4 main sh1pt cli commands (and sub-commands) as seen in our docs page' ($73.165 USD)
+2026-06-26 15:14:12,426 [INFO] Gig bc84d9b3-c26c-463b-9827-97cb17ae99ea score: 0.2795 (Category: coding, Complexity: medium)
+2026-06-26 15:14:12,426 [INFO] Skip Gig bc84d9b3-c26c-463b-9827-97cb17ae99ea — score 0.2795 below 0.45 threshold
+2026-06-26 15:14:12,426 [INFO] Scoring Gig: 'AI Desktop Automation Setup with ClawdCursor' ($8.7798 USD)
+2026-06-26 15:14:13,534 [INFO] Gig 862b335f-62a8-4901-a760-2c74ac359486 score: 0.2133 (Category: other, Complexity: medium)
+2026-06-26 15:14:13,534 [INFO] Skip Gig 862b335f-62a8-4901-a760-2c74ac359486 — category 'other' is currently busy with another active job.
+2026-06-26 15:14:13,534 [INFO] Scoring Gig: 'SEO-Optimized Blog Post Generation' ($10.9748 USD)
+2026-06-26 15:14:14,506 [INFO] Gig 4fc08201-335b-4148-8d03-5dfcfc46a55f score: 0.0399 (Category: writing, Complexity: medium)
+2026-06-26 15:14:14,507 [INFO] Skip Gig 4fc08201-335b-4148-8d03-5dfcfc46a55f — score 0.0399 below 0.45 threshold
+2026-06-26 15:14:14,507 [INFO] Scoring Gig: 'Crypto Whale Tracking & Smart Money Analysis' ($5.1216 USD)
+2026-06-26 15:14:15,556 [INFO] Gig 89d9a45f-41d2-42a4-89c4-29766879f841 score: 0.2397 (Category: data, Complexity: medium)
+2026-06-26 15:14:15,557 [INFO] Skip Gig 89d9a45f-41d2-42a4-89c4-29766879f841 — score 0.2397 below 0.45 threshold
+2026-06-26 15:14:15,557 [INFO] Scoring Gig: 'Prediction Market Analysis & Edge Detection' ($5.8532 USD)
+2026-06-26 15:14:16,532 [INFO] Gig 2b2bbd2d-38a3-4cff-8845-774ec72f12f6 score: 0.0296 (Category: data, Complexity: hard)
+2026-06-26 15:14:16,533 [INFO] Skip Gig 2b2bbd2d-38a3-4cff-8845-774ec72f12f6 — score 0.0296 below 0.45 threshold
+2026-06-26 15:14:16,533 [INFO] Scoring Gig: 'Agent Fate Polymarket Trading Bot Setup' ($7.3165 USD)
+2026-06-26 15:14:17,763 [INFO] Gig 1a13e38a-cea3-4cfa-9d3a-97b7e39df50b score: 0.3852 (Category: coding, Complexity: hard)
+2026-06-26 15:14:17,763 [INFO] Skip Gig 1a13e38a-cea3-4cfa-9d3a-97b7e39df50b — score 0.3852 below 0.45 threshold
+2026-06-26 15:14:17,763 [INFO] ugig.net Earn Loop complete. Scored: 15, Processed/Submitted: 0

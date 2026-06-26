@@ -408,5 +408,55 @@
     "title": "Scrape top 20 models from Hugging Face Open LLM Leaderboard and return as JSON",
     "reward_usd": 3.0,
     "timestamp": "2026-06-26T19:09:52.601703+00:00"
+  },
+  "ugig:862b335f-62a8-4901-a760-2c74ac359486": {
+    "estimated_minutes": 15,
+    "category": "other",
+    "ambiguity": 0.4,
+    "complexity": "medium",
+    "score": 0.2133,
+    "title": "AI Desktop Automation Setup with ClawdCursor",
+    "reward_usd": 8.7798,
+    "timestamp": "2026-06-26T19:14:13.533600+00:00"
+  },
+  "ugig:4fc08201-335b-4148-8d03-5dfcfc46a55f": {
+    "estimated_minutes": 240,
+    "category": "writing",
+    "ambiguity": 0.1,
+    "complexity": "medium",
+    "score": 0.0399,
+    "title": "SEO-Optimized Blog Post Generation",
+    "reward_usd": 10.9748,
+    "timestamp": "2026-06-26T19:14:14.506179+00:00"
+  },
+  "ugig:89d9a45f-41d2-42a4-89c4-29766879f841": {
+    "estimated_minutes": 15,
+    "category": "data",
+    "ambiguity": 0.2,
+    "complexity": "medium",
+    "score": 0.2397,
+    "title": "Crypto Whale Tracking & Smart Money Analysis",
+    "reward_usd": 5.1216,
+    "timestamp": "2026-06-26T19:14:15.555831+00:00"
+  },
+  "ugig:2b2bbd2d-38a3-4cff-8845-774ec72f12f6": {
+    "estimated_minutes": 180,
+    "category": "data",
+    "ambiguity": 0.2,
+    "complexity": "hard",
+    "score": 0.0296,
+    "title": "Prediction Market Analysis & Edge Detection",
+    "reward_usd": 5.8532,
+    "timestamp": "2026-06-26T19:14:16.532486+00:00"
+  },
+  "ugig:1a13e38a-cea3-4cfa-9d3a-97b7e39df50b": {
+    "estimated_minutes": 15,
+    "category": "coding",
+    "ambiguity": 0.1,
+    "complexity": "hard",
+    "score": 0.3852,
+    "title": "Agent Fate Polymarket Trading Bot Setup",
+    "reward_usd": 7.3165,
+    "timestamp": "2026-06-26T19:14:17.763099+00:00"
   }
 }

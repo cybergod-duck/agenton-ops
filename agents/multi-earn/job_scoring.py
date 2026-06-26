@@ -295,6 +295,11 @@ def execute_job_with_llm(job: Job, openrouter_key: str) -> str:
         description=job.description
     )
     
+    # 1. Enforce size limit in prompt for ugig
+    is_ugig = job.platform.lower().startswith("ugig")
+    if is_ugig:
+        prompt += "\n\nIMPORTANT: Your response MUST be extremely concise and strictly under 2000 characters total (including all code, markdown, and explanations) because the platform has a strict 2000-character cover letter limit. Focus purely on the solution/code and skip wordy explanations."
+        
     url = f"{LLM_API_BASE}/chat/completions"
     headers = {
         "Authorization": f"Bearer {openrouter_key}",
@@ -302,10 +307,16 @@ def execute_job_with_llm(job: Job, openrouter_key: str) -> str:
         "HTTP-Referer": "https://github.com/BCR-AgentOn",
         "X-Title": "BCR-AgentOn-WorkExecution",
     }
+    
+    # 2. Limit max_tokens for ugig to prevent long output
+    max_tokens = 4000
+    if is_ugig:
+        max_tokens = 450
+        
     payload = {
         "model": LLM_MODEL,
         "messages": [{"role": "user", "content": prompt}],
-        "max_tokens": 4000,
+        "max_tokens": max_tokens,
         "temperature": 0.5,
     }
     
@@ -332,6 +343,11 @@ def execute_job_with_llm(job: Job, openrouter_key: str) -> str:
         )
     except Exception as e:
         log.warning(f"Failed to record token usage: {e}")
+        
+    # 3. Fallback hard truncation
+    if is_ugig and len(content) > 1995:
+        log.warning(f"UgIg output was {len(content)} chars. Hard truncating to stay under 2000-char limit.")
+        content = content[:1990] + "\n[Trunc]"
         
     return content
 

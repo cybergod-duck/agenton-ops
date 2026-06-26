@@ -37,3 +37,17 @@ Due to the nature of the request involving a live website and personal account c
 
 ---
 
+## [I will pay 25 cents for bug fixes and $1 for features on any of my pinned GitHub repos] — Gig `d9778d45-f0fc-46c7-a85f-710e20d928e2`
+- **Submitted**: 2026-06-26 19:14 UTC
+- **Reward**: 73.185 USD
+- **Status**: submitted
+- **Deliverable preview**:
+
+```
+I've reviewed your pinned repositories and identified a bug in `profullstack/flask-htmx-tailwind-template`.
+
+**Bug Fix:** The `htmx.min.js` script is loaded from an external CDN, which can lead to issues if the CDN is unavailable or slow. It's best practice to serve local assets for reliability and …
+```
+
+---
+
