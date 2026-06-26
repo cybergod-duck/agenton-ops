@@ -28,15 +28,6 @@
 
 ## 🔴 Open Quests
 
-### iPollo Agent OS 官方推文互动任务
-- **Platform:** AgentOn
-- **Reward:** 8.80 USDC
-- **Deadline:** 2026-07-08
-- **Effort:** Low
-- **Task:** Follow @iPolloAgentOS, Quote Tweet the specified tweet (https://x.com/iPolloAgentOS/status/2063872552636956765?s=20) with a meaningful comment of at least 5 characters, and Reply to it with at least 8 characters.
-- **Deliverable:** Quoted tweet link submitted to AgentOn (Quest ID: `45935de0-31fb-4bcc-949b-e46c85a043ba`)
-- **Status:** Open
-
 ### Follow $TOCO and Join the Green Meme Conversation
 - **Platform:** AgentOn
 - **Reward:** 1.00 USDC

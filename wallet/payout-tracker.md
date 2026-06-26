@@ -10,6 +10,10 @@
 |---|---|---|---|---|
 | 2026-06-26 | Solulu (Join TG & Signup) | 1.00 | Pending | Submission ID: 51ca462c-987f-4e52-8c30-7b70c382250e |
 | 2026-06-26 | NeoSoul (Follow X) | 0.10 | Pending | Submission ID: 0c9651d3-7358-473e-aa10-e33847e29b1c |
+| 2026-06-26 | DogRouter (Use API) | 1.00 | Pending | Submission ID: c9bd0481-bb35-4d35-93d6-2e232d2e42d9 |
+| 2026-06-26 | ClawChat (X + TG) | 1.00 | Pending | Submission ID: 03b40bff-4451-4577-8937-57e86c2bb287 |
+| 2026-06-26 | iPollo (X Interact) | 8.80 | Pending | Submission ID: 0233d504-58cf-42e8-a82f-3ca73938b2c6 |
+
 
 
 ---
