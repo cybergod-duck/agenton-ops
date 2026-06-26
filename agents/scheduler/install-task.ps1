@@ -25,7 +25,7 @@ function Register-Task {
         $Trigger = New-ScheduledTaskTrigger -Once `
                         -At "$StartTime" `
                         -RepetitionInterval (New-TimeSpan -Minutes $IntervalMinutes) `
-                        -RepetitionDuration ([System.TimeSpan]::MaxValue)
+                        -RepetitionDuration (New-TimeSpan -Days 9999)
     } elseif ($TriggerType -eq "AtStartup") {
         $Trigger = New-ScheduledTaskTrigger -AtStartup
     } else {
@@ -78,10 +78,19 @@ Register-Task `
     -IntervalMinutes 240 `
     -StartTime "10:00"
 
+# ── 4. DealWork Loop — every 5 hours from 11AM ──────────────────────────────────
+Register-Task `
+    -TaskName "MultiEarn_DealWork" `
+    -Argument "agents\multi-earn\dealwork_agent.py" `
+    -WorkDir $AgentOnDir `
+    -TriggerType "Repetition" `
+    -IntervalMinutes 300 `
+    -StartTime "11:00"
+
 # ── Summary ───────────────────────────────────────────────────────────────────
 Write-Host ""
 Write-Host "=== Task Scheduler Status ==="
-@("AgentOn_EarnLoop", "MultiEarn_BountyBook", "MultiEarn_ClawEarn") | ForEach-Object {
+@("AgentOn_EarnLoop", "MultiEarn_BountyBook", "MultiEarn_ClawEarn", "MultiEarn_DealWork") | ForEach-Object {
     $t = Get-ScheduledTask -TaskName $_ -ErrorAction SilentlyContinue
     if ($t) {
         $next = ($t | Get-ScheduledTaskInfo).NextRunTime

@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>⚡ Sovereign Earn Stack — Live Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+<style>
+  :root {
+    --bg:        #080c14;
+    --bg2:       #0d1220;
+    --bg3:       #111827;
+    --card:      #131b2e;
+    --card2:     #192235;
+    --border:    #1e2d4a;
+    --border2:   #243352;
+    --accent:    #00e5ff;
+    --accent2:   #7c3aed;
+    --green:     #00f5a0;
+    --green2:    #10b981;
+    --orange:    #ff9500;
+    --red:       #ff4757;
+    --text:      #e2e8f0;
+    --text2:     #8fa3c0;
+    --text3:     #4a6080;
+    --glow:      0 0 20px rgba(0,229,255,0.15);
+    --glow2:     0 0 40px rgba(0,245,160,0.10);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Floating orbs */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.12;
+    pointer-events: none;
+    z-index: 0;
+    animation: drift 20s ease-in-out infinite;
+  }
+  .orb1 { width: 600px; height: 600px; background: var(--accent2); top: -200px; right: -100px; animation-delay: 0s; }
+  .orb2 { width: 400px; height: 400px; background: var(--accent); bottom: 0; left: -100px; animation-delay: -10s; }
+  .orb3 { width: 300px; height: 300px; background: var(--green); top: 40%; left: 40%; animation-delay: -5s; }
+  @keyframes drift { 0%,100% { transform: translate(0,0); } 50% { transform: translate(30px,20px); } }
+
+  /* ── Header ─────────────────────────────────────────────────────── */
+  header {
+    position: relative; z-index: 10;
+    padding: 24px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,12,20,0.8);
+    backdrop-filter: blur(20px);
+  }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-icon {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 0 20px rgba(0,229,255,0.3);
+  }
+  .logo-text h1 { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+  .logo-text p { font-size: 12px; color: var(--text2); font-weight: 400; }
+
+  .header-right { display: flex; align-items: center; gap: 16px; }
+  .live-badge {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(0,245,160,0.1);
+    border: 1px solid rgba(0,245,160,0.2);
+    padding: 6px 12px; border-radius: 20px;
+    font-size: 12px; color: var(--green); font-weight: 600;
+  }
+  .live-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--green);
+    animation: pulse-dot 2s ease-in-out infinite;
+    box-shadow: 0 0 8px var(--green);
+  }
+  @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+  #last-updated { font-size: 11px; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
+
+  /* ── Main layout ─────────────────────────────────────────────────── */
+  main {
+    position: relative; z-index: 1;
+    max-width: 1600px; margin: 0 auto;
+    padding: 32px 40px;
+  }
+
+  /* ── KPI Row ─────────────────────────────────────────────────────── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .kpi-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 24px;
+    position: relative; overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .kpi-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--border2);
+    box-shadow: var(--glow);
+  }
+  .kpi-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    border-radius: 16px 16px 0 0;
+    background: var(--kpi-color, linear-gradient(90deg, var(--accent), var(--accent2)));
+  }
+  .kpi-label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-bottom: 8px; }
+  .kpi-value { font-size: 32px; font-weight: 800; letter-spacing: -1px; line-height: 1; }
+  .kpi-sub { font-size: 12px; color: var(--text2); margin-top: 6px; }
+  .kpi-icon { position: absolute; right: 20px; top: 20px; font-size: 24px; opacity: 0.3; }
+
+  .kpi-up { color: var(--green); }
+  .kpi-cyan { color: var(--accent); }
+  .kpi-purple { color: #a78bfa; }
+  .kpi-orange { color: var(--orange); }
+
+  /* ── Section title ───────────────────────────────────────────────── */
+  .section-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 16px;
+  }
+  .section-header h2 { font-size: 16px; font-weight: 700; }
+  .section-header .badge {
+    background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.2);
+    color: var(--accent); font-size: 11px; font-weight: 600;
+    padding: 2px 8px; border-radius: 8px;
+  }
+
+  /* ── Charts grid ─────────────────────────────────────────────────── */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+
+  .chart-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+  }
+  .chart-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .chart-card .chart-sub { font-size: 12px; color: var(--text2); margin-bottom: 20px; }
+  .chart-wrap { position: relative; height: 280px; }
+
+  /* ── Projection cards row ────────────────────────────────────────── */
+  .proj-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .proj-card {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    text-align: center;
+    position: relative; overflow: hidden;
+    transition: all 0.2s;
+  }
+  .proj-card:hover { border-color: var(--border2); box-shadow: var(--glow); transform: translateY(-2px); }
+  .proj-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--proj-bg, rgba(0,229,255,0.03));
+  }
+  .proj-label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-bottom: 8px; }
+  .proj-value { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+  .proj-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+  /* ── Bottom grid ─────────────────────────────────────────────────── */
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+
+  /* ── Platform status ─────────────────────────────────────────────── */
+  .platform-list { display: flex; flex-direction: column; gap: 10px; }
+  .platform-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 16px;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: all 0.2s;
+  }
+  .platform-item:hover { border-color: var(--border2); }
+  .platform-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 0 8px currentColor;
+  }
+  .platform-name { font-size: 13px; font-weight: 600; flex: 1; }
+  .platform-earned { font-size: 13px; font-weight: 700; color: var(--green); font-family: 'JetBrains Mono', monospace; }
+  .platform-status { font-size: 11px; color: var(--text3); font-weight: 500; }
+
+  /* ── Timeline ────────────────────────────────────────────────────── */
+  .timeline { display: flex; flex-direction: column; gap: 8px; }
+  .tl-item {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 10px 12px;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 12px;
+    transition: all 0.15s;
+  }
+  .tl-item:hover { border-color: var(--border2); background: var(--card); }
+  .tl-platform {
+    font-size: 10px; font-weight: 700;
+    padding: 2px 7px; border-radius: 6px;
+    white-space: nowrap; flex-shrink: 0;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .tl-title { flex: 1; color: var(--text); line-height: 1.4; }
+  .tl-amount { font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--green); white-space: nowrap; }
+  .tl-date { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+  /* ── Milestones ──────────────────────────────────────────────────── */
+  .milestone-list { display: flex; flex-direction: column; gap: 12px; }
+  .milestone {
+    position: relative;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    overflow: hidden;
+  }
+  .milestone-bar {
+    position: absolute;
+    bottom: 0; left: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 0 0 0 12px;
+    transition: width 1s ease;
+  }
+  .milestone-label { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .milestone-value { font-size: 11px; color: var(--text2); }
+  .milestone-pct { font-size: 18px; font-weight: 800; color: var(--accent); position: absolute; right: 16px; top: 12px; }
+
+  /* ── API usage bar ───────────────────────────────────────────────── */
+  .usage-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .usage-label { font-size: 12px; color: var(--text2); width: 120px; flex-shrink: 0; }
+  .usage-bar-wrap { flex: 1; height: 8px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+  .usage-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+  .usage-count { font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--text2); width: 50px; text-align: right; }
+
+  /* ── Wallet card ─────────────────────────────────────────────────── */
+  .wallet-card {
+    background: linear-gradient(135deg, #0d1a2e 0%, #131b30 50%, #0a1525 100%);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    padding: 24px;
+    grid-column: span 3;
+    display: flex; align-items: center; gap: 32px;
+    position: relative; overflow: hidden;
+  }
+  .wallet-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(0,229,255,0.04) 0%, rgba(124,58,237,0.04) 100%);
+  }
+  .wallet-info { flex: 1; }
+  .wallet-title { font-size: 12px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+  .wallet-address {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; color: var(--accent);
+    word-break: break-all;
+    background: rgba(0,229,255,0.06);
+    border: 1px solid rgba(0,229,255,0.1);
+    padding: 8px 12px; border-radius: 8px;
+    margin-bottom: 8px;
+  }
+  .wallet-notice {
+    font-size: 12px; color: var(--orange);
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(255,149,0,0.08);
+    border: 1px solid rgba(255,149,0,0.15);
+    padding: 8px 12px; border-radius: 8px;
+  }
+  .wallet-stats { display: flex; gap: 32px; }
+  .wstat { text-align: center; }
+  .wstat-value { font-size: 24px; font-weight: 800; color: var(--green); font-family: 'JetBrains Mono', monospace; }
+  .wstat-label { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+  /* ── Scrollbar ───────────────────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  /* ── Responsive ──────────────────────────────────────────────────── */
+  @media (max-width: 1100px) {
+    .charts-grid { grid-template-columns: 1fr; }
+    .proj-grid { grid-template-columns: repeat(2, 1fr); }
+    .bottom-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 700px) {
+    main { padding: 16px; }
+    header { padding: 16px; }
+    .proj-grid { grid-template-columns: repeat(2, 1fr); }
+    .bottom-grid { grid-template-columns: 1fr; }
+    .wallet-card { flex-direction: column; grid-column: span 1; }
+  }
+
+  /* ── Loading skeleton ────────────────────────────────────────────── */
+  .skeleton {
+    background: linear-gradient(90deg, var(--card2) 25%, var(--card) 50%, var(--card2) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+    height: 32px;
+  }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+  /* ── Animate in ──────────────────────────────────────────────────── */
+  .fade-in { animation: fadeIn 0.6s ease forwards; opacity: 0; }
+  @keyframes fadeIn { to { opacity: 1; } }
+</style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<!-- Header -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">⚡</div>
+    <div class="logo-text">
+      <h1>Sovereign Earn Stack</h1>
+      <p>@BC_Research_ · cybergod · Multi-Platform Agent Ops</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="live-badge"><div class="live-dot"></div> LIVE</div>
+    <div id="last-updated">Loading...</div>
+  </div>
+</header>
+
+<main>
+
+  <!-- KPI Row -->
+  <div class="kpi-grid" id="kpi-grid">
+    <div class="kpi-card" style="--kpi-color: linear-gradient(90deg,#00f5a0,#00b894)">
+      <div class="kpi-icon">💰</div>
+      <div class="kpi-label">Total Earned</div>
+      <div class="kpi-value kpi-up" id="kpi-total">—</div>
+      <div class="kpi-sub">USDC confirmed</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color: linear-gradient(90deg,#00e5ff,#0070ff)">
+      <div class="kpi-icon">📋</div>
+      <div class="kpi-label">Quests Completed</div>
+      <div class="kpi-value kpi-cyan" id="kpi-quests">—</div>
+      <div class="kpi-sub">All platforms</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color: linear-gradient(90deg,#a78bfa,#7c3aed)">
+      <div class="kpi-icon">🤖</div>
+      <div class="kpi-label">Platforms Active</div>
+      <div class="kpi-value kpi-purple" id="kpi-platforms">—</div>
+      <div class="kpi-sub">Earn loops running</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color: linear-gradient(90deg,#ff9500,#ff6b00)">
+      <div class="kpi-icon">📈</div>
+      <div class="kpi-label">Projected Monthly</div>
+      <div class="kpi-value kpi-orange" id="kpi-monthly">—</div>
+      <div class="kpi-sub">USDC at current rate</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color: linear-gradient(90deg,#ff4757,#ff1e3a)">
+      <div class="kpi-icon">🐦</div>
+      <div class="kpi-label">Twitter API Calls</div>
+      <div class="kpi-value" style="color:#ff6b7a" id="kpi-twitter">—</div>
+      <div class="kpi-sub">Today (limit: 50)</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color: linear-gradient(90deg,#00b4db,#0083b0)">
+      <div class="kpi-icon">✈️</div>
+      <div class="kpi-label">Telegram Actions</div>
+      <div class="kpi-value kpi-cyan" id="kpi-telegram">—</div>
+      <div class="kpi-sub">Today</div>
+    </div>
+  </div>
+
+  <!-- Projection Cards -->
+  <div class="section-header">
+    <h2>💹 Income Projections</h2>
+    <span class="badge" id="expansion-badge">1x base</span>
+  </div>
+  <div class="proj-grid">
+    <div class="proj-card" style="--proj-bg: rgba(0,245,160,0.04)">
+      <div class="proj-label">Daily Avg (Actual)</div>
+      <div class="proj-value" style="color:var(--green)" id="proj-daily-actual">—</div>
+      <div class="proj-sub">USDC / day</div>
+    </div>
+    <div class="proj-card" style="--proj-bg: rgba(0,229,255,0.04)">
+      <div class="proj-label">Daily (w/ Expansion)</div>
+      <div class="proj-value" style="color:var(--accent)" id="proj-daily">—</div>
+      <div class="proj-sub">USDC / day</div>
+    </div>
+    <div class="proj-card" style="--proj-bg: rgba(124,58,237,0.04)">
+      <div class="proj-label">Weekly Projected</div>
+      <div class="proj-value" style="color:#a78bfa" id="proj-weekly">—</div>
+      <div class="proj-sub">USDC / week</div>
+    </div>
+    <div class="proj-card" style="--proj-bg: rgba(255,149,0,0.04)">
+      <div class="proj-label">Yearly Projected</div>
+      <div class="proj-value" style="color:var(--orange)" id="proj-yearly">—</div>
+      <div class="proj-sub">USDC / year</div>
+    </div>
+  </div>
+
+  <!-- Main Charts -->
+  <div class="charts-grid">
+    <div class="chart-card fade-in">
+      <h3>📊 Earnings History + 14-Day Projection</h3>
+      <p class="chart-sub">Daily USDC earned (solid) vs projected trajectory (dashed)</p>
+      <div class="chart-wrap">
+        <canvas id="earningsChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card fade-in">
+      <h3>🥧 Platform Breakdown</h3>
+      <p class="chart-sub">USDC distribution by platform</p>
+      <div class="chart-wrap">
+        <canvas id="platformChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Grid -->
+  <div class="bottom-grid">
+    <!-- Platform Status -->
+    <div class="chart-card">
+      <div class="section-header">
+        <h2>🌐 Platform Status</h2>
+      </div>
+      <div class="platform-list" id="platform-list">
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="chart-card">
+      <div class="section-header">
+        <h2>⚡ Recent Activity</h2>
+      </div>
+      <div class="timeline" id="timeline">
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+      </div>
+    </div>
+
+    <!-- Milestones -->
+    <div class="chart-card">
+      <div class="section-header">
+        <h2>🎯 Milestones</h2>
+      </div>
+      <div class="milestone-list" id="milestone-list">
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+      </div>
+
+      <div style="margin-top:20px">
+        <div class="section-header">
+          <h2>📡 API Usage Today</h2>
+        </div>
+        <div id="api-usage"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wallet Card -->
+  <div style="margin-bottom:24px">
+    <div class="wallet-card" style="display: flex; flex-wrap: wrap; gap: 24px; align-items: stretch; justify-content: space-between;">
+      <!-- Wallet Info -->
+      <div class="wallet-info" style="flex: 2; min-width: 300px;">
+        <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 12px;">
+          <div style="flex: 1; min-width: 200px;">
+            <div class="wallet-title">⛽ Agent Gas Wallet (Base L2)</div>
+            <div class="wallet-address" style="user-select: all; cursor: pointer;" onclick="navigator.clipboard.writeText(this.innerText.trim()); alert('Copied Gas Wallet Address!');">
+              0xAA37201F63183e816219e6D20c784Fef7C89901f
+            </div>
+          </div>
+          <div style="flex: 1; min-width: 200px;">
+            <div class="wallet-title">💰 Main Payout Wallet (Base L2)</div>
+            <div class="wallet-address" style="user-select: all; cursor: pointer; color: var(--green); border-color: rgba(0,245,160,0.15); background: rgba(0,245,160,0.04);" onclick="navigator.clipboard.writeText(this.innerText.trim()); alert('Copied Main Payout Wallet Address!');">
+              0x0190C582b0eF8a4D27aaDbf73FEFc1f389bd1f5C
+            </div>
+          </div>
+        </div>
+        <div class="wallet-notice" style="color: var(--accent); background: rgba(0,229,255,0.05); border-color: rgba(0,229,255,0.15); margin-bottom: 8px; font-size: 11px; line-height: 1.4;">
+          💡 <strong>Security Design:</strong> All USDC earnings are auto-routed or withdrawn directly to your <strong>Main Payout Wallet</strong>. The <strong>Agent Gas Wallet</strong> is a worker key that signs submissions and pays transaction gas (ETH on Base) to claim and submit tasks. It cannot spend/withdraw from your Main Wallet.
+        </div>
+        <div class="wallet-notice" style="color: var(--orange); background: rgba(255,149,0,0.08); border-color: rgba(255,149,0,0.15); font-size: 11px; line-height: 1.4;">
+          ⚠️ Send ~0.005 ETH on the <strong>Base Network</strong> to the Gas Wallet to activate autonomous platforms (BountyBook, Claw Earn, dealwork).
+        </div>
+      </div>
+      
+      <!-- QR Code -->
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(8,12,20,0.4); padding: 16px; border-radius: 12px; border: 1px solid var(--border); text-align: center; min-width: 160px;">
+        <div style="font-size: 9px; color: var(--text2); font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px;">Scan to Fund Gas (Base ETH)</div>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&amp;data=0xAA37201F63183e816219e6D20c784Fef7C89901f" alt="QR Code" style="width: 100px; height: 100px; border-radius: 6px; border: 4px solid white; display: block; margin: 0 auto;" />
+        <div style="font-size: 8px; color: var(--text3); font-family: 'JetBrains Mono', monospace; margin-top: 6px; word-break: break-all;">0xAA37201F...901f</div>
+      </div>
+
+      <!-- Wallet Stats -->
+      <div class="wallet-stats" style="flex: 1; flex-direction: column; gap: 12px; justify-content: center; min-width: 150px; border-left: 1px solid var(--border); padding-left: 24px;">
+        <div class="wstat" style="text-align: left;">
+          <div class="wstat-value" id="w-total">$0</div>
+          <div class="wstat-label">Total Earned</div>
+        </div>
+        <div class="wstat" style="text-align: left;">
+          <div class="wstat-value" id="w-days-50">—</div>
+          <div class="wstat-label">Days to $50 target</div>
+        </div>
+        <div class="wstat" style="text-align: left;">
+          <div class="wstat-value" id="w-days-500">—</div>
+          <div class="wstat-label">Days to $500 target</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ── Chart.js setup ─────────────────────────────────────────────────────────
+Chart.defaults.color = '#8fa3c0';
+Chart.defaults.borderColor = '#1e2d4a';
+Chart.defaults.font.family = "'Inter', sans-serif";
+
+let earningsChart = null;
+let platformChart = null;
+
+const PLATFORM_COLORS = {
+  'AgentOn':    { color: '#00e5ff', bg: 'rgba(0,229,255,0.15)' },
+  'BountyBook': { color: '#a78bfa', bg: 'rgba(167,139,250,0.15)' },
+  'Claw Earn':  { color: '#00f5a0', bg: 'rgba(0,245,160,0.15)' },
+  'dealwork':   { color: '#ff9500', bg: 'rgba(255,149,0,0.15)' },
+  'ugig':       { color: '#ff6b9d', bg: 'rgba(255,107,157,0.15)' },
+};
+
+function getPlatformColor(name) {
+  return PLATFORM_COLORS[name] || { color: '#8fa3c0', bg: 'rgba(143,163,192,0.15)' };
+}
+
+// ── Earnings Chart ─────────────────────────────────────────────────────────
+function buildEarningsChart(data) {
+  const ctx = document.getElementById('earningsChart').getContext('2d');
+  const allDates = [...data.dates, ...data.proj_dates];
+
+  if (earningsChart) earningsChart.destroy();
+
+  // Gradient fill for actual earnings
+  const grad = ctx.createLinearGradient(0, 0, 0, 280);
+  grad.addColorStop(0, 'rgba(0,245,160,0.3)');
+  grad.addColorStop(1, 'rgba(0,245,160,0.01)');
+
+  const grad2 = ctx.createLinearGradient(0, 0, 0, 280);
+  grad2.addColorStop(0, 'rgba(0,229,255,0.2)');
+  grad2.addColorStop(1, 'rgba(0,229,255,0.01)');
+
+  earningsChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: allDates,
+      datasets: [
+        {
+          label: 'Daily Earned (USDC)',
+          data: [...data.daily_values, ...new Array(data.proj_dates.length).fill(null)],
+          borderColor: '#00f5a0',
+          backgroundColor: grad,
+          borderWidth: 2.5,
+          pointRadius: 4,
+          pointHoverRadius: 7,
+          pointBackgroundColor: '#00f5a0',
+          pointBorderColor: '#080c14',
+          pointBorderWidth: 2,
+          tension: 0.4,
+          fill: true,
+        },
+        {
+          label: 'Projected Cumulative (USDC)',
+          data: [
+            ...new Array(data.dates.length).fill(null),
+            ...data.proj_values
+          ],
+          borderColor: '#00e5ff',
+          backgroundColor: grad2,
+          borderWidth: 2,
+          borderDash: [6, 4],
+          pointRadius: 3,
+          pointHoverRadius: 6,
+          pointBackgroundColor: '#00e5ff',
+          pointBorderColor: '#080c14',
+          pointBorderWidth: 2,
+          tension: 0.4,
+          fill: true,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      scales: {
+        x: {
+          grid: { color: 'rgba(30,45,74,0.5)' },
+          ticks: {
+            maxTicksLimit: 10,
+            maxRotation: 0,
+            font: { size: 10 },
+            callback: function(v, i) {
+              const d = allDates[i];
+              if (!d) return '';
+              const isProj = i >= data.dates.length;
+              const label = d.slice(5); // MM-DD
+              return isProj ? '→' + label : label;
+            }
+          }
+        },
+        y: {
+          grid: { color: 'rgba(30,45,74,0.5)' },
+          ticks: { callback: v => '$' + v.toFixed(2) },
+          beginAtZero: true,
+        }
+      },
+      plugins: {
+        legend: {
+          labels: { usePointStyle: true, pointStyle: 'circle', font: { size: 12 } }
+        },
+        tooltip: {
+          backgroundColor: '#131b2e',
+          borderColor: '#1e2d4a',
+          borderWidth: 1,
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: $${(ctx.raw || 0).toFixed(2)} USDC`
+          }
+        }
+      }
+    }
+  });
+}
+
+// ── Platform Doughnut ──────────────────────────────────────────────────────
+function buildPlatformChart(breakdown) {
+  const ctx = document.getElementById('platformChart').getContext('2d');
+  if (platformChart) platformChart.destroy();
+
+  const names  = Object.keys(breakdown);
+  const values = Object.values(breakdown);
+  const colors = names.map(n => getPlatformColor(n).color);
+  const bgs    = names.map(n => getPlatformColor(n).bg);
+
+  if (names.length === 0) {
+    names.push('No Data Yet'); values.push(1);
+    colors.push('#1e2d4a'); bgs.push('rgba(30,45,74,0.3)');
+  }
+
+  platformChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: names,
+      datasets: [{
+        data: values,
+        backgroundColor: bgs,
+        borderColor: colors,
+        borderWidth: 2,
+        hoverBorderWidth: 3,
+        hoverOffset: 8,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '65%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { usePointStyle: true, pointStyle: 'circle', font: { size: 12 }, padding: 16 }
+        },
+        tooltip: {
+          backgroundColor: '#131b2e',
+          borderColor: '#1e2d4a',
+          borderWidth: 1,
+          callbacks: {
+            label: ctx => ` $${(ctx.raw || 0).toFixed(2)} USDC (${names.length > 1 ? Math.round(ctx.raw / values.reduce((a,b)=>a+b,0)*100) : 100}%)`
+          }
+        }
+      }
+    }
+  });
+}
+
+// ── Platform Status List ────────────────────────────────────────────────────
+const ALL_PLATFORMS = [
+  { name: 'AgentOn',    interval: '2h',  status: 'active' },
+  { name: 'BountyBook', interval: '3h',  status: 'active' },
+  { name: 'Claw Earn',  interval: '4h',  status: 'active' },
+  { name: 'dealwork',   interval: '3h',  status: 'building' },
+  { name: 'ugig.net',   interval: '—',   status: 'queued' },
+];
+
+function renderPlatformList(breakdown) {
+  const el = document.getElementById('platform-list');
+  el.innerHTML = ALL_PLATFORMS.map(p => {
+    const { color } = getPlatformColor(p.name);
+    const earned = breakdown[p.name] || 0;
+    const statusColor = p.status === 'active' ? '#00f5a0' : p.status === 'building' ? '#ff9500' : '#4a6080';
+    const statusText = p.status === 'active' ? '● Active' : p.status === 'building' ? '◐ Building' : '○ Queued';
+    return `
+      <div class="platform-item">
+        <div class="platform-dot" style="color:${color};background:${color}"></div>
+        <div style="flex:1">
+          <div class="platform-name">${p.name}</div>
+          <div class="platform-status" style="color:${statusColor}">${statusText} · every ${p.interval}</div>
+        </div>
+        <div class="platform-earned">${earned > 0 ? '$' + earned.toFixed(2) : '—'}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── Timeline ───────────────────────────────────────────────────────────────
+function renderTimeline(submissions) {
+  const el = document.getElementById('timeline');
+  if (!submissions.length) {
+    el.innerHTML = '<div style="color:var(--text3);font-size:13px;text-align:center;padding:20px">No submissions yet — loops running...</div>';
+    return;
+  }
+  el.innerHTML = submissions.slice(0, 8).map(s => {
+    const { color, bg } = getPlatformColor(s.platform);
+    const title = s.title.length > 40 ? s.title.slice(0, 40) + '…' : s.title;
+    const date = s.date.slice(0, 10);
+    return `
+      <div class="tl-item">
+        <div class="tl-platform" style="background:${bg};color:${color};border:1px solid ${color}40">${s.platform}</div>
+        <div style="flex:1">
+          <div class="tl-title">${title}</div>
+          <div class="tl-date">${date}</div>
+        </div>
+        <div class="tl-amount">+$${s.reward.toFixed(2)}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── Milestones ─────────────────────────────────────────────────────────────
+function renderMilestones(proj) {
+  const total = proj.total_earned || 0;
+  const milestones = [
+    { label: '$10 USDC — First Withdrawal Eligible', target: 10 },
+    { label: '$50 USDC — FluxA Auto-Withdrawal',     target: 50 },
+    { label: '$100 USDC — Scale Up Phase',            target: 100 },
+    { label: '$500 USDC — Monthly Target',            target: 500 },
+  ];
+
+  const el = document.getElementById('milestone-list');
+  el.innerHTML = milestones.map(m => {
+    const pct = Math.min((total / m.target) * 100, 100);
+    const done = total >= m.target;
+    return `
+      <div class="milestone">
+        <div class="milestone-bar" style="width:${pct}%;${done ? 'background:var(--green)' : ''}"></div>
+        <div class="milestone-label" style="color:${done ? 'var(--green)' : 'var(--text)'}">${done ? '✅ ' : ''}${m.label}</div>
+        <div class="milestone-value">$${total.toFixed(2)} / $${m.target} USDC</div>
+        <div class="milestone-pct" style="color:${done ? 'var(--green)' : 'var(--accent)'}">${Math.round(pct)}%</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── API Usage ──────────────────────────────────────────────────────────────
+function renderApiUsage(twitter, telegram) {
+  const el = document.getElementById('api-usage');
+  const twitterPct = Math.min((twitter / 50) * 100, 100);
+  const twitterColor = twitter > 40 ? '#ff4757' : twitter > 25 ? '#ff9500' : '#00f5a0';
+  const telegramPct = Math.min((telegram / 20) * 100, 100);
+
+  el.innerHTML = `
+    <div class="usage-row">
+      <div class="usage-label">🐦 Twitter API</div>
+      <div class="usage-bar-wrap">
+        <div class="usage-bar-fill" style="width:${twitterPct}%;background:${twitterColor}"></div>
+      </div>
+      <div class="usage-count">${twitter}/50</div>
+    </div>
+    <div class="usage-row">
+      <div class="usage-label">✈️ Telegram</div>
+      <div class="usage-bar-wrap">
+        <div class="usage-bar-fill" style="width:${telegramPct}%;background:#00b4db"></div>
+      </div>
+      <div class="usage-count">${telegram}/20</div>
+    </div>
+  `;
+}
+
+// ── Main data fetch ────────────────────────────────────────────────────────
+async function fetchAndRender() {
+  try {
+    const res = await fetch('http://localhost:5050/api/summary');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const p = data.projections;
+
+    // Header
+    document.getElementById('last-updated').textContent =
+      'Updated ' + new Date(data.last_updated).toLocaleTimeString();
+
+    // KPIs
+    document.getElementById('kpi-total').textContent   = '$' + (p.total_earned || 0).toFixed(2);
+    document.getElementById('kpi-quests').textContent  = data.completed_quests;
+    document.getElementById('kpi-platforms').textContent = (p.platforms_active || 1);
+    document.getElementById('kpi-monthly').textContent = '$' + (p.monthly || 0).toFixed(2);
+    document.getElementById('kpi-twitter').textContent = data.twitter_calls_today || 0;
+    document.getElementById('kpi-telegram').textContent = data.telegram_actions_today || 0;
+
+    // Projections
+    const factor = p.expansion_factor || 1;
+    document.getElementById('expansion-badge').textContent = factor.toFixed(1) + 'x multi-platform expansion';
+    document.getElementById('proj-daily-actual').textContent = '$' + (p.daily_avg || 0).toFixed(2);
+    document.getElementById('proj-daily').textContent       = '$' + (p.projected_daily || 0).toFixed(2);
+    document.getElementById('proj-weekly').textContent      = '$' + (p.weekly || 0).toFixed(2);
+    document.getElementById('proj-yearly').textContent      = '$' + (p.yearly || 0).toFixed(2);
+
+    // Wallet stats
+    document.getElementById('w-total').textContent      = '$' + (p.total_earned || 0).toFixed(2);
+    document.getElementById('w-days-50').textContent    = p.days_to_50 > 0 ? p.days_to_50 + 'd' : '✅';
+    document.getElementById('w-days-500').textContent   = p.days_to_500 > 0 ? p.days_to_500 + 'd' : '✅';
+
+    // Charts
+    buildEarningsChart(data.chart);
+    buildPlatformChart(data.platform_breakdown || {});
+
+    // Lists
+    renderPlatformList(data.platform_breakdown || {});
+    renderTimeline(data.recent_submissions || []);
+    renderMilestones(p);
+    renderApiUsage(data.twitter_calls_today || 0, data.telegram_actions_today || 0);
+
+  } catch (err) {
+    console.warn('API not reachable:', err.message);
+    document.getElementById('last-updated').textContent = '⚠ API offline — start dashboard_api.py';
+    // Show demo data when API is offline
+    buildEarningsChart({
+      dates: Array.from({length:30},(_,i)=>{
+        const d = new Date(); d.setDate(d.getDate()-29+i);
+        return d.toISOString().slice(0,10);
+      }),
+      daily_values: Array.from({length:30},(_,i) => i > 20 ? +(Math.random()*3+0.5).toFixed(2) : 0),
+      proj_dates: Array.from({length:14},(_,i)=>{
+        const d = new Date(); d.setDate(d.getDate()+i+1);
+        return d.toISOString().slice(0,10);
+      }),
+      proj_values: Array.from({length:14},(_,i) => +((i+1)*2.5+15).toFixed(2)),
+    });
+    buildPlatformChart({ AgentOn: 12.3, BountyBook: 5.1, 'Claw Earn': 2.8 });
+    renderPlatformList({ AgentOn: 12.3, BountyBook: 5.1, 'Claw Earn': 2.8 });
+    renderTimeline([]);
+    renderMilestones({ total_earned: 20.2, daily_avg: 1.2, projected_daily: 2.1, days_to_50: 14, days_to_500: 228 });
+    renderApiUsage(3, 1);
+  }
+}
+
+// Auto-refresh every 30 seconds
+fetchAndRender();
+setInterval(fetchAndRender, 30000);
+</script>
+</body>
+</html>
