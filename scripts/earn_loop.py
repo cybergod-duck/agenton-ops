@@ -3,10 +3,14 @@ import re
 import sys
 import json
 import time
+import asyncio
 import requests
 import subprocess
 import tweepy
 from datetime import datetime
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from telegram_actions import TelegramActions, extract_tg_username
 
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -242,23 +246,37 @@ Description: {description}
 Goal: {goal}
 
 Analyze the requirements and output a JSON object with the following fields:
-1. "is_automatable": boolean. True if the quest only requires Twitter (X) actions like following accounts, posting tweets, replying, liking, retweeting, or quoting. Set to False if it requires WeChat, Telegram (joining or chatting, unless it's just a simple link click we can pretend to do), Discord, registering on a website, KYC, trading, or mobile app installation.
-2. "required_actions": list of actions to take in order. Each action must be a JSON object with:
-   - "type": "follow", "target": "username" (without @, e.g. "Toco_Toco_Toco")
-   - "type": "post", "text": "tweet text to post"
-   - "type": "like", "target_tweet_id": "numeric tweet ID or full URL"
-   - "type": "reply", "target_tweet_id": "numeric tweet ID or full URL", "text": "reply text"
-   - "type": "retweet", "target_tweet_id": "numeric tweet ID or full URL"
-   - "type": "quote", "target_tweet_id": "numeric tweet ID or full URL", "text": "quote text"
+1. "is_automatable": boolean. True if the quest ONLY requires:
+   - Twitter (X) actions: follow, post, like, reply, retweet, quote
+   - Telegram actions: joining a public group/channel, sending a message to a group, or pressing /start on a bot
+   Set to False ONLY if it requires: WeChat, Discord, website registration/KYC, trading, mobile app install, or anything that needs a browser.
+2. "required_actions": list of actions in order. Each action is a JSON object with one of these types:
+   Twitter actions:
+   - {{"type": "follow", "target": "username_without_at"}}
+   - {{"type": "post", "text": "tweet text under 280 chars"}}
+   - {{"type": "like", "target_tweet_id": "tweet URL or ID"}}
+   - {{"type": "reply", "target_tweet_id": "tweet URL or ID", "text": "reply text"}}
+   - {{"type": "retweet", "target_tweet_id": "tweet URL or ID"}}
+   - {{"type": "quote", "target_tweet_id": "tweet URL or ID", "text": "quote text"}}
+   Telegram actions:
+   - {{"type": "tg_join", "target": "group_username_or_tme_link"}} — join a public group or channel
+   - {{"type": "tg_send", "target": "group_username", "text": "message to send in the group"}}
+   - {{"type": "tg_join_and_send", "target": "group_username", "text": "message to send after joining"}}
+   - {{"type": "tg_bot_start", "target": "bot_username"}} — send /start to a Telegram bot
 3. "content_summary": string summarizing what was done.
-4. "attachments": list of strings (proof links or placeholders). Use "<TWEET_URL>" if a posted/replied/quoted tweet URL should be used, or the profile link "https://x.com/BC_Research_" if follow only.
+4. "attachments": list of proof links/placeholders:
+   - Use "<TWEET_URL>" for posted/replied/quoted tweet URLs
+   - Use "https://x.com/BC_Research_" for Twitter follow-only
+   - Use "<TG_MSG_URL>" for Telegram message proof links
+   - Use "https://t.me/Crypto_dvck" for Telegram join-only proof
 
-Guidelines for generating tweet text:
-- Make the text sound natural, original, and positive, and strictly follow any instructions in the quest description (e.g. hashtags, handles to mention).
-- Keep it under 280 characters.
-- Do not use placeholders like [insert link] in the text; instead, output final text.
+Guidelines:
+- For tweet text: sound natural, positive, follow any hashtag/mention requirements, under 280 chars, no placeholders.
+- For Telegram message text: sound like a real community member, relevant to the group topic, not spammy.
+- Extract group usernames from t.me/ links in the description.
+- If a quest says join Telegram AND post on Twitter, include both sets of actions — it is still automatable.
 
-Format the output strictly as JSON. No markdown formatting around the JSON (no ```json ... ``` blocks). Just the raw JSON object.
+Format output as raw JSON only. No markdown, no code fences.
 """
 
     if google_key and not google_key.startswith("AQ."):
@@ -439,7 +457,7 @@ def sync_git_repo(repo_dir, commit_msg):
     except Exception as e:
         print(f"Git sync failed in {repo_dir}: {e}")
 
-def main():
+async def main():
     root_dir = r"C:\BC RESEARCH\AI_FACTORY"
     agenton_dir = os.path.join(root_dir, "AgentOn")
     bot_env_path = os.path.join(root_dir, "bot.env")
@@ -451,6 +469,9 @@ def main():
     payout_tracker_path = os.path.join(agenton_dir, "wallet", "payout-tracker.md")
     active_path = os.path.join(agenton_dir, "quests", "active.md")
     completed_dir = os.path.join(agenton_dir, "quests", "completed")
+    tg_join_cache_path = os.path.join(root_dir, "agents", "telegram", "joined-groups.txt")
+    tg_log_path = os.path.join(agenton_dir, "outputs", "telegram-actions.md")
+    ai_env_path = os.path.join(root_dir, "AI.env")
 
     keys = {}
     if os.path.exists(bot_env_path):
@@ -509,6 +530,14 @@ def main():
         consumer_secret=keys.get("TWITTER_CONSUMER_SECRET"),
         access_token=keys.get("TWITTER_ACCESS_TOKEN"),
         access_token_secret=keys.get("TWITTER_ACCESS_SECRET")
+    )
+
+    # 3b. Initialize Telegram client
+    tg = TelegramActions(
+        keys=keys,
+        join_cache_path=tg_join_cache_path,
+        tg_log_path=tg_log_path,
+        ai_env_path=ai_env_path,
     )
 
     attempted_quest_ids = set()
@@ -609,6 +638,7 @@ def main():
 
         required_actions = llm_res.get("required_actions", [])
         requires_twitter = any(a.get("type") in ["follow", "post", "reply", "like", "retweet", "quote"] for a in required_actions)
+        requires_telegram = any(a.get("type") in ["tg_join", "tg_send", "tg_join_and_send", "tg_bot_start"] for a in required_actions)
 
         if requires_twitter and daily_limit_exceeded:
             print(f"Quest {quest_id} requires Twitter actions, but daily limit is exceeded. Skipping execution.")
@@ -619,6 +649,7 @@ def main():
         print(f"Executing automatable quest: {title}")
         success = True
         action_tweet_urls = []
+        action_tg_urls = []
 
         for action in required_actions:
             atype = action.get("type")
@@ -627,8 +658,10 @@ def main():
 
             if requires_twitter and loop_x_api_calls >= 10:
                 print("Loop Twitter API call limit (10) reached. Exiting earn loop script run.")
+                await tg.disconnect()
                 sys.exit(0)
 
+            # --- Twitter Actions ---
             if atype == "follow":
                 ok, msg = run_follow_action(client, usage_log_path, follow_cache_path, target)
                 print(f"Follow {target}: {msg}")
@@ -655,6 +688,42 @@ def main():
                 if not ok:
                     success = False
                     break
+
+            # --- Telegram Actions ---
+            elif atype == "tg_join":
+                tg_handle = extract_tg_username(str(target)) or str(target)
+                ok, msg = await tg.join_group(tg_handle)
+                print(f"TG join @{tg_handle}: {msg}")
+                if not ok:
+                    success = False
+                    break
+                if not msg.startswith("Already"):
+                    action_tg_urls.append(f"https://t.me/{tg_handle}")
+            elif atype == "tg_send":
+                tg_handle = extract_tg_username(str(target)) or str(target)
+                ok, link = await tg.send_message(tg_handle, text)
+                print(f"TG send @{tg_handle}: {'ok — ' + link if ok else 'fail — ' + link}")
+                if ok:
+                    action_tg_urls.append(link)
+                else:
+                    success = False
+                    break
+            elif atype == "tg_join_and_send":
+                tg_handle = extract_tg_username(str(target)) or str(target)
+                ok, link = await tg.join_and_send(tg_handle, text)
+                print(f"TG join+send @{tg_handle}: {'ok — ' + link if ok else 'fail — ' + link}")
+                if ok:
+                    action_tg_urls.append(link)
+                else:
+                    success = False
+                    break
+            elif atype == "tg_bot_start":
+                tg_handle = extract_tg_username(str(target)) or str(target)
+                ok, msg = await tg.signup_bot(tg_handle)
+                print(f"TG bot start @{tg_handle}: {msg}")
+                if not ok:
+                    success = False
+                    break
             else:
                 print(f"Unknown action type: {atype}")
                 success = False
@@ -671,6 +740,9 @@ def main():
             if attachment == "<TWEET_URL>":
                 if action_tweet_urls:
                     resolved_attachments.append(action_tweet_urls[0])
+            elif attachment == "<TG_MSG_URL>":
+                if action_tg_urls:
+                    resolved_attachments.append(action_tg_urls[0])
             else:
                 resolved_attachments.append(attachment)
 
@@ -678,8 +750,15 @@ def main():
             if url not in resolved_attachments:
                 resolved_attachments.append(url)
 
+        for url in action_tg_urls:
+            if url not in resolved_attachments:
+                resolved_attachments.append(url)
+
         if not resolved_attachments and any(a.get("type") == "follow" for a in required_actions):
             resolved_attachments.append("https://x.com/BC_Research_")
+
+        if not resolved_attachments and any(a.get("type").startswith("tg_") for a in required_actions):
+            resolved_attachments.append("https://t.me/Crypto_dvck")
 
         payload = {
             "content": llm_res.get("content_summary", f"Completed {title}"),
@@ -717,7 +796,8 @@ def main():
             if add_quest_to_active_file(active_path, q_full):
                 sync_git_repo(agenton_dir, f"bot: add submission-error quest {quest_id} to active.md")
 
+    await tg.disconnect()
     print(f"[{datetime.now().isoformat()}] --- Earn Loop Completed ---")
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
