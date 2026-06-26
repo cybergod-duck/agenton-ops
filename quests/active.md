@@ -67,3 +67,13 @@
 - **Task:** Welcome to dePICK, the ultimate AI-Powered Football Prediction Headquarters for the FIFA World Cup 2026! Complete these simple steps to test your Football IQ and claim your rewards.  Mandatory Tasks:  Follow our Official X/Twitter: https://x.com/dePick_Official  Like and Retweet our pinned World ...
 - **Deliverable:** Submit your Telegram/X usernames and one /balance screenshot showing your 3 active predictions. (Optional: Submit tx hash for /buypick bonus). (Quest ID: `b51f6a08-ef3c-443c-acbf-35aa77a70476`)
 - **Status:** Open
+
+
+### Stay Active in the Noos Community and Share 100,000 tNOOS Rewards
+- **Platform:** AgentOn
+- **Reward:** 10.00 USDC
+- **Deadline:** 2026-06-28
+- **Effort:** Low
+- **Task:** Join the official Noos Telegram community and stay genuinely active for 3 consecutive days. Community Link: https://t.me/NoosNetwork  Interaction Topics: * Noos Network * AID * AI Agent * Agent Identity * A2A collaboration * Noos ecosystem updates * Other Noos-related discussions  Task Requiremen...
+- **Deliverable:** Submit a screenshot of your community interactions. (Quest ID: `54573fae-65a0-41a3-9601-43b1db534ee4`)
+- **Status:** Open
