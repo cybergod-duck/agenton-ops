@@ -103,10 +103,11 @@ def get_platform_payouts(platform: str, filename: str) -> list[dict]:
     rows = parse_md_table(path)
     result = []
     for r in rows:
+        reward_val = r.get("Amount (USDC)") or r.get("Amount (USD)") or r.get("Reward USDC") or "0"
         result.append({
             "date": r.get("Date", ""),
             "title": r.get("Source", r.get("Title", "Unknown")),
-            "reward": parse_amount(r.get("Amount (USDC)", r.get("Reward USDC", "0"))),
+            "reward": parse_amount(reward_val),
             "platform": platform,
             "status": r.get("Status", "pending")
         })
@@ -154,6 +155,7 @@ def get_all_earnings() -> list[dict]:
     all_earnings.extend(get_platform_payouts("BountyBook", "bountybook-payouts.md"))
     all_earnings.extend(get_platform_payouts("Claw Earn", "claw-earn-payouts.md"))
     all_earnings.extend(parse_dealwork_payouts())
+    all_earnings.extend(get_platform_payouts("ugig.net", "ugig-payouts.md"))
     return [e for e in all_earnings if e["reward"] > 0]
 
 def get_twitter_calls_today() -> int:
@@ -227,10 +229,12 @@ def calculate_projections(earnings: list[dict]) -> dict:
 
 def get_scheduler_status() -> list[dict]:
     tasks = [
-        {"name": "AgentOn_EarnLoop",    "interval": "2h",  "platform": "AgentOn"},
-        {"name": "MultiEarn_BountyBook","interval": "3h",  "platform": "BountyBook"},
-        {"name": "MultiEarn_ClawEarn",  "interval": "4h",  "platform": "Claw Earn"},
-        {"name": "MultiEarn_DealWork",  "interval": "5h",  "platform": "dealwork"},
+        {"name": "AgentOn_EarnLoop",       "interval": "2h",  "platform": "AgentOn"},
+        {"name": "AgentOn_QuestRunner",    "interval": "2h",  "platform": "Quest Runner"},
+        {"name": "MultiEarn_BountyBook",   "interval": "3h",  "platform": "BountyBook"},
+        {"name": "MultiEarn_ClawEarn",     "interval": "4h",  "platform": "Claw Earn"},
+        {"name": "MultiEarn_DealWork",     "interval": "5h",  "platform": "dealwork"},
+        {"name": "MultiEarn_Ugig",         "interval": "5h",  "platform": "ugig.net"},
     ]
     result = []
     for t in tasks:
@@ -307,9 +311,11 @@ running_processes = {}
 def start_agent_process(platform: str) -> str:
     script_map = {
         "agenton": (ROOT / "scripts" / "earn_loop.py", ROOT / "outputs" / "earn_loop.log"),
+        "quest_runner": (ROOT / "agents" / "agenton" / "quest_runner.py", ROOT / "outputs" / "agenton" / "quest_runner.log"),
         "bountybook": (ROOT / "agents" / "multi-earn" / "bountybook_agent.py", ROOT / "outputs" / "multi-earn" / "bountybook.log"),
         "claw": (ROOT / "agents" / "multi-earn" / "claw_earn_agent.py", ROOT / "outputs" / "multi-earn" / "claw.log"),
-        "dealwork": (ROOT / "agents" / "multi-earn" / "dealwork_agent.py", ROOT / "outputs" / "multi-earn" / "dealwork.log")
+        "dealwork": (ROOT / "agents" / "multi-earn" / "dealwork_agent.py", ROOT / "outputs" / "multi-earn" / "dealwork.log"),
+        "ugig": (ROOT / "agents" / "multi-earn" / "ugig_agent.py", ROOT / "outputs" / "multi-earn" / "ugig.log")
     }
     if platform not in script_map:
         return "invalid_platform"
@@ -339,9 +345,11 @@ def start_agent_process(platform: str) -> str:
 def get_recent_logs(platform: str, num_lines: int = 100) -> str:
     log_map = {
         "agenton": ROOT / "outputs" / "earn_loop.log",
+        "quest_runner": ROOT / "outputs" / "agenton" / "quest_runner.log",
         "bountybook": ROOT / "outputs" / "multi-earn" / "bountybook.log",
         "claw": ROOT / "outputs" / "multi-earn" / "claw.log",
-        "dealwork": ROOT / "outputs" / "multi-earn" / "dealwork.log"
+        "dealwork": ROOT / "outputs" / "multi-earn" / "dealwork.log",
+        "ugig": ROOT / "outputs" / "multi-earn" / "ugig.log"
     }
     if platform not in log_map:
         return "Invalid platform"
@@ -349,9 +357,11 @@ def get_recent_logs(platform: str, num_lines: int = 100) -> str:
     if not log_path.exists():
         fallback_map = {
             "agenton": ROOT / "outputs" / "submissions-log.md",
+            "quest_runner": ROOT / "outputs" / "agenton" / "quest_runner.log",
             "bountybook": ROOT / "outputs" / "multi-earn" / "bountybook-submissions.md",
             "claw": ROOT / "outputs" / "multi-earn" / "claw-earn-submissions.md",
-            "dealwork": ROOT / "outputs" / "multi-earn" / "dealwork-submissions.md"
+            "dealwork": ROOT / "outputs" / "multi-earn" / "dealwork-submissions.md",
+            "ugig": ROOT / "outputs" / "multi-earn" / "ugig-submissions.md"
         }
         fb = fallback_map.get(platform)
         if fb and fb.exists():
@@ -388,7 +398,7 @@ def api_run_agent():
 @app.route("/api/agent-status", methods=["GET"])
 def api_agent_status():
     status_dict = {}
-    for platform in ["agenton", "bountybook", "claw", "dealwork"]:
+    for platform in ["agenton", "quest_runner", "bountybook", "claw", "dealwork", "ugig"]:
         p = running_processes.get(platform)
         status_dict[platform] = "running" if (p and p.poll() is None) else "idle"
     return jsonify(status_dict)
@@ -429,13 +439,15 @@ You have access to the current system context:
 
 Available commands you can trigger:
 1. Run AgentOn Loop: triggers `scripts/earn_loop.py`
-2. Run BountyBook Loop: triggers `agents/multi-earn/bountybook_agent.py`
-3. Run Claw Earn Loop: triggers `agents/multi-earn/claw_earn_agent.py`
-4. Run DealWork Loop: triggers `agents/multi-earn/dealwork_agent.py`
+2. Run AgentOn Quest Runner: triggers `agents/agenton/quest_runner.py`
+3. Run BountyBook Loop: triggers `agents/multi-earn/bountybook_agent.py`
+4. Run Claw Earn Loop: triggers `agents/multi-earn/claw_earn_agent.py`
+5. Run DealWork Loop: triggers `agents/multi-earn/dealwork_agent.py`
+6. Run ugig.net Loop: triggers `agents/multi-earn/ugig_agent.py`
 
 If the user wants you to run any of these platforms, set the JSON output fields:
 - "action": "run_agent"
-- "platform": "agenton" | "bountybook" | "claw" | "dealwork"
+- "platform": "agenton" | "quest_runner" | "bountybook" | "claw" | "dealwork" | "ugig"
 
 Respond ONLY in JSON format:
 {{

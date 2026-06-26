@@ -23,6 +23,10 @@ import subprocess
 import requests
 from datetime import datetime
 
+# Add multi-earn dir to path for imports
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from job_scoring import Job, score_job
+
 ROOT_DIR        = r"C:\BC RESEARCH\AI_FACTORY"
 AGENTON_DIR     = os.path.join(ROOT_DIR, "AgentOn")
 BOT_ENV_PATH    = os.path.join(ROOT_DIR, "bot.env")
@@ -290,14 +294,34 @@ def main():
             print(f"[CE] Skip {task_id} — category '{category}' not in supported list")
             continue
 
-        print(f"\n[CE] Processing task '{title}' (${reward:.2f}, {category})")
-
         # Get full detail
         try:
             detail = fetch_task_detail(task_id, session)
         except Exception as e:
             print(f"[CE] Detail fetch failed: {e}")
             detail = task
+
+        # ROI Scoring check
+        raw_desc = detail.get("requirements", detail.get("description", detail.get("title", "")))
+        job_obj = Job(
+            id=str(task_id),
+            platform="claw earn",
+            title=title,
+            description=raw_desc,
+            reward_usd=reward,
+            raw=detail
+        )
+        try:
+            score, evaluated_job = score_job(job_obj, keys.get("OPENROUTER_API_KEY"))
+            print(f"[CE] Task {task_id} scored: {score} (Category: {evaluated_job.category}, Complexity: {evaluated_job.complexity}, Ambiguity: {evaluated_job.ambiguity})")
+            if score < 0.4:
+                print(f"[CE] Skip {task_id} — score {score} is below threshold 0.4")
+                log_submission(task_id, title, reward, "skipped", f"Score {score} too low")
+                continue
+        except Exception as e:
+            print(f"[CE] Scoring failed for {task_id}: {e}")
+
+        print(f"\n[CE] Processing task '{title}' (${reward:.2f}, {category})")
 
         # Execute with LLM
         deliverable = execute_task_with_llm(detail, keys)

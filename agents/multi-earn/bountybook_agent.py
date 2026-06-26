@@ -25,6 +25,10 @@ import requests
 from datetime import datetime
 from pathlib import Path
 
+# Add multi-earn dir to path for imports
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from job_scoring import Job, score_job
+
 # ── Config ────────────────────────────────────────────────────────────────────
 ROOT_DIR       = r"C:\BC RESEARCH\AI_FACTORY"
 AGENTON_DIR    = os.path.join(ROOT_DIR, "AgentOn")
@@ -335,14 +339,34 @@ def main():
                 print(f"[BB] Skip {job_id} — budget ${budget:.2f} above safety limit (${MAX_JOB_BUDGET_USDC})")
                 continue
 
-            print(f"\n[BB] Processing: '{title}' (${budget:.2f} USDC, {category})")
-
             # Fetch full details
             try:
                 full_job = fetch_job_details(job_id, token)
             except Exception as e:
                 print(f"[BB] Failed to fetch details for {job_id}: {e}")
                 continue
+
+            # ROI Scoring check
+            raw_desc = full_job.get("description", full_job.get("title", ""))
+            job_obj = Job(
+                id=str(job_id),
+                platform="bountybook",
+                title=title,
+                description=raw_desc,
+                reward_usd=budget,
+                raw=full_job
+            )
+            try:
+                score, evaluated_job = score_job(job_obj, keys.get("OPENROUTER_API_KEY"))
+                print(f"[BB] Job {job_id} scored: {score} (Category: {evaluated_job.category}, Complexity: {evaluated_job.complexity}, Ambiguity: {evaluated_job.ambiguity})")
+                if score < 0.4:
+                    print(f"[BB] Skip {job_id} — score {score} is below threshold 0.4")
+                    log_submission(job_id, title, budget, "skipped", f"Score {score} too low")
+                    continue
+            except Exception as e:
+                print(f"[BB] Scoring failed for {job_id}: {e}")
+
+            print(f"\n[BB] Processing: '{title}' (${budget:.2f} USDC, {category})")
 
             # Execute with LLM
             print(f"[BB] Running LLM to generate deliverable...")

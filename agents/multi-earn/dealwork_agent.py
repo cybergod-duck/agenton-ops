@@ -32,6 +32,10 @@ from pathlib import Path
 
 import requests
 
+# Add multi-earn dir to path for imports
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from job_scoring import Job, score_job
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Constants
 # ─────────────────────────────────────────────────────────────────────────────
@@ -446,8 +450,34 @@ def fetch_jobs(client: DealworkClient) -> list[dict]:
     return jobs
 
 
-def filter_jobs(jobs: list[dict], attempted: set[str]) -> list[dict]:
-    """Keep jobs that are open, within budget, and not yet attempted."""
+def get_client_id(job: dict) -> str:
+    """Extract client / poster identifier from job record."""
+    poster = job.get("poster")
+    if isinstance(poster, dict):
+        pid = poster.get("id") or poster.get("accountId")
+        if pid:
+            return str(pid)
+    for field in ["poster_id", "client_id", "clientId", "posterId", "owner_id", "owner"]:
+        val = job.get(field)
+        if val:
+            return str(val)
+    return "unknown_client"
+
+
+def filter_jobs(jobs: list[dict], attempted: set[str], agent_id: str) -> list[dict]:
+    """Keep jobs that are open, within budget, not yet attempted, and respect client cooldown."""
+    # Find clients of currently claimed/delivered jobs that belong to us
+    active_clients = set()
+    for j in jobs:
+        jid = j.get("id", "")
+        status = j.get("status", "")
+        # If we have already attempted this job, and it's still in claimed/delivered status, it's pending approval
+        if jid in attempted and status in ("claimed", "delivered", "working"):
+            client_id = get_client_id(j)
+            if client_id != "unknown_client":
+                active_clients.add(client_id)
+                log.info("Client %s has a pending job %s (status: %s) — applying cooldown.", client_id, jid, status)
+
     eligible = []
     for j in jobs:
         jid    = j.get("id", "")
@@ -461,6 +491,12 @@ def filter_jobs(jobs: list[dict], attempted: set[str]) -> list[dict]:
             continue
         if not within_budget(j):
             log.debug("Skip job %s — budget %.2f out of range", jid, parse_budget(j))
+            continue
+
+        # Client cooldown check
+        client_id = get_client_id(j)
+        if client_id != "unknown_client" and client_id in active_clients:
+            log.info("Skip job %s — client %s cooldown active", jid, client_id)
             continue
 
         # Only take jobs our capabilities cover
@@ -569,13 +605,32 @@ def earn_loop(
             log.error("Failed to fetch jobs: %s", exc)
             jobs = []
 
-        eligible = filter_jobs(jobs, attempted)
+        eligible = filter_jobs(jobs, attempted, client.agent_id)
         log.info("Eligible jobs this loop: %d", len(eligible))
 
         submitted_this_loop = 0
         for job in eligible:
             jid = job.get("id")
             attempted.add(jid)  # Mark before processing to avoid retries on error
+
+            # ROI Scoring check
+            raw_desc = job.get("description", job.get("title", ""))
+            job_obj = Job(
+                id=str(jid),
+                platform="dealwork",
+                title=job.get("title", "Untitled"),
+                description=raw_desc,
+                reward_usd=parse_budget(job),
+                raw=job
+            )
+            try:
+                score, evaluated_job = score_job(job_obj, openrouter_key)
+                log.info("Job %s scored: %s (Category: %s, Complexity: %s, Ambiguity: %s)", jid, score, evaluated_job.category, evaluated_job.complexity, evaluated_job.ambiguity)
+                if score < 0.4:
+                    log.info("Skip job %s — score %s is below threshold 0.4", jid, score)
+                    continue
+            except Exception as e:
+                log.error("Scoring failed for job %s: %s", jid, e)
 
             success = process_job(client, job, openrouter_key)
             if success:

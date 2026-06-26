@@ -554,6 +554,9 @@
           <button id="btn-agenton" onclick="runAgent('agenton')" style="background: rgba(0,229,255,0.08); border: 1px solid rgba(0,229,255,0.25); color: var(--accent); border-radius: 10px; padding: 10px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
             <div class="live-dot" id="dot-agenton" style="background: var(--red); box-shadow: none; animation: none;"></div> Trigger AgentOn
           </button>
+          <button id="btn-quest_runner" onclick="runAgent('quest_runner')" style="background: rgba(255,0,128,0.08); border: 1px solid rgba(255,0,128,0.25); color: #ff0080; border-radius: 10px; padding: 10px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <div class="live-dot" id="dot-quest_runner" style="background: var(--red); box-shadow: none; animation: none;"></div> Trigger Quest Runner
+          </button>
           <button id="btn-bountybook" onclick="runAgent('bountybook')" style="background: rgba(167,139,250,0.08); border: 1px solid rgba(167,139,250,0.25); color: #a78bfa; border-radius: 10px; padding: 10px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
             <div class="live-dot" id="dot-bountybook" style="background: var(--red); box-shadow: none; animation: none;"></div> Trigger BountyBook
           </button>
@@ -562,6 +565,9 @@
           </button>
           <button id="btn-dealwork" onclick="runAgent('dealwork')" style="background: rgba(255,149,0,0.08); border: 1px solid rgba(255,149,0,0.25); color: var(--orange); border-radius: 10px; padding: 10px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
             <div class="live-dot" id="dot-dealwork" style="background: var(--red); box-shadow: none; animation: none;"></div> Trigger DealWork
+          </button>
+          <button id="btn-ugig" onclick="runAgent('ugig')" style="background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.25); color: #ffd700; border-radius: 10px; padding: 10px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <div class="live-dot" id="dot-ugig" style="background: var(--red); box-shadow: none; animation: none;"></div> Trigger ugig.net
           </button>
         </div>
       </div>
@@ -574,9 +580,11 @@
           </div>
           <select id="log-platform-select" onchange="loadAgentLogs()" style="background: var(--card); border: 1px solid var(--border); color: var(--text); border-radius: 6px; font-size: 11px; padding: 2px 8px; outline: none; font-family: 'JetBrains Mono', monospace;">
             <option value="agenton">AgentOn Loop</option>
+            <option value="quest_runner">AgentOn Quest Runner</option>
             <option value="bountybook">BountyBook Loop</option>
             <option value="claw">Claw Earn Loop</option>
             <option value="dealwork">DealWork Loop</option>
+            <option value="ugig">ugig.net Loop</option>
           </select>
         </div>
         <pre id="log-terminal" style="flex: 1; padding: 16px; margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #39ff14; overflow-y: auto; text-align: left; white-space: pre-wrap; line-height: 1.5; background: #02050a; scrollbar-width: thin; max-height: 240px;">Select a platform or trigger an agent to view logs...</pre>
