@@ -11,3 +11,4 @@
 
 
 
+| 2026-06-26 | 关注并与Fufuture推文进行互动 | `e3c68676-3a4f-4ffa-9980-b9aecb3320ed` | `91b8accc-3053-4fbe-8b33-a5420675c7a0` | 10.00 | Submitted | Followed @Fufuture_io and quoted a tweet, discussing bringing gold on-chain for 24-hour trading, mentioning coin-margined and fully on-chain features, and including specified hashtags. |

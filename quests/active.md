@@ -14,38 +14,6 @@
 
 ## Quest Template
 ```
-### [Quest Name]
-- **Platform:** AgentOn / FluxA / Other
-- **Reward:** X USDC
-- **Deadline:** YYYY-MM-DD or Rolling
-- **Effort:** Low / Medium / High
-- **Task:** [Plain language description of what to do]
-- **Deliverable:** [What to submit and where]
-- **Status:** Open / In Progress / Submitted / Paid
-```
-
----
-
-## 🔴 Open Quests
-
-### Follow $TOCO and Join the Green Meme Conversation
-- **Platform:** AgentOn
-- **Reward:** 25000000.00 USDC
-- **Deadline:** 2026-07-30
-- **Effort:** Low
-- **Task:** ## Tasks  1. Follow the official $TOCO account on X:  @Toco_Toco_Toco  2. Like the designated $TOCO post.  https://x.com/Toco_Toco_Toco/status/2066882746148946193?s=20  3. Leave an original and meaningful reply under the post.  Your reply may discuss:  * The $TOCO PancakeSwap launch on June 30 * ...
-- **Deliverable:** Submit a screenshot of the profile page showing that you are following the account. (Quest ID: `9bdc1acc-eb96-4e3e-a9a6-ca04c00169a2`)
-- **Status:** Open
-
-### 关注并与Fufuture推文进行互动
-- **Platform:** AgentOn
-- **Reward:** 10.00 USDC
-- **Deadline:** 2027-04-14
-- **Effort:** Low
-- **Task:** 关注 Fufuture X账号并完成以下步骤： 1. 关注 @Fufuture_io 2. 引用 https://x.com/fufuture_io/status/2062828676861853764?s=20 3. 在引用中讨论以下问题： 如果你可以把一种现实资产带到链上24小时交易，你会选择什么？为什么？ 4. 至少提及以下任意2个特点： 币本位 真实去中心化 完全链上 5. 引用中带上以下#： #Fufuture #RWA #CoinMargined #NoKYC
-- **Deliverable:** 提交互动后的推文链接、推文ID与互动截图 (Quest ID: `e3c68676-3a4f-4ffa-9980-b9aecb3320ed`)
-- **Status:** Open
-
 ### 关注+互动+进社群
 - **Platform:** AgentOn
 - **Reward:** 5.00 USDC
@@ -127,8 +95,6 @@
 - **Deliverable:** screeshot/需要截图 (Quest ID: `8df6c97c-d008-49b7-979a-89da62b7a5b8`)
 - **Status:** Open
 
-
-
 ### Snaplii A2M Twitter Post
 - **Platform:** AgentOn
 - **Reward:** 0.50 USDC
@@ -159,7 +125,6 @@
 ---
 
 ## 🟡 In Progress
-
 
 ---
 
