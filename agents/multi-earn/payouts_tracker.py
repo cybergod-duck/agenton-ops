@@ -8,6 +8,8 @@ import os
 import sys
 import json
 import logging
+import threading
+import time
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
@@ -186,7 +188,8 @@ def record_payout(
         # Trigger auto-withdrawal immediately on paid transition
         if is_paid_transition:
             try:
-                trigger_auto_withdrawal(platform, job_id, title, reward_usd, currency)
+                if not trocador_swap_check(platform, job_id, title, reward_usd, currency):
+                    trigger_auto_withdrawal(platform, job_id, title, reward_usd, currency)
             except Exception as e:
                 log.error(f"Auto-withdrawal trigger failed: {e}")
         
@@ -728,6 +731,68 @@ def send_onchain_doge_transfer() -> str | None:
     except Exception as e:
         log.error(f"DOGE on-chain transfer failed: {e}")
         return None
+
+def get_agent_evm_address() -> str:
+    keys = load_bot_env()
+    pk = keys.get("AGENT_ETH_PRIVATE_KEY") or keys.get("BOUNTYBOOK_PRIVATE_KEY")
+    if not pk:
+        return ""
+    try:
+        from web3 import Web3
+        w3 = Web3()
+        account = w3.eth.account.from_key(pk)
+        return account.address
+    except Exception:
+        return ""
+
+def trocador_swap_check(platform: str, job_id: str, title: str, reward_usd: float, currency: str) -> bool:
+    """
+    Check if payout is non-USDC. If so, offer Trocador/ChangeNOW affiliate swap link
+    and schedule a 5-minute delayed auto-withdrawal.
+    Returns True if intercepted, False otherwise.
+    """
+    coin = currency.upper().strip()
+    if coin == "USDC":
+        return False
+
+    agent_evm_addr = get_agent_evm_address()
+    
+    # Import affiliate rails
+    from crypto.swap_affiliate import trocador_deep_link, changenow_deep_link
+    
+    # Generate affiliate swap links (target USDC, destination agent EVM wallet)
+    trocador_link = trocador_deep_link(coin.lower(), reward_usd, to_coin="usdc", address=agent_evm_addr)
+    changenow_link = changenow_deep_link(coin.lower(), reward_usd, to_coin="usdc", address=agent_evm_addr)
+
+    msg = (
+        f"⚠️ *Non-USDC Payout Intercepted*\n"
+        f"• *Platform*: `{platform}`\n"
+        f"• *Job*: `{title}`\n"
+        f"• *Reward*: `{reward_usd}` `{coin}`\n\n"
+        f"You can manually swap this to USDC using our affiliate links to earn commission:\n"
+        f"🔗 [Trocador Swap]({trocador_link})\n"
+        f"🔗 [ChangeNOW Swap]({changenow_link})\n\n"
+        f"Target EVM Address: `{agent_evm_addr}`\n\n"
+        f"⏱️ *Auto-withdrawal to treasury delayed for 5 minutes.*"
+    )
+    
+    try:
+        notify_telegram(msg)
+    except Exception as e:
+        log.warning(f"Failed to send Telegram notification in trocador_swap_check: {e}")
+
+    # Run delayed withdrawal in background thread
+    def delayed_withdrawal():
+        log.info(f"Background thread: waiting 5 minutes before auto-withdrawal for {platform}:{job_id}")
+        time.sleep(300)
+        try:
+            trigger_auto_withdrawal(platform, job_id, title, reward_usd, currency)
+        except Exception as e:
+            log.error(f"Delayed auto-withdrawal trigger failed: {e}")
+
+    thread = threading.Thread(target=delayed_withdrawal, daemon=True)
+    thread.start()
+    return True
 
 def trigger_auto_withdrawal(platform: str, job_id: str, title: str, reward_usd: float, currency: str):
     keys = load_bot_env()
