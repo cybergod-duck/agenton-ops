@@ -26,6 +26,7 @@ class UgigClient:
         self.bearer_token = bearer_token
         self.session = requests.Session()
         self.session.headers.update({"Accept": "application/json"})
+        self._price_cache = {}
 
     def _headers(self) -> dict:
         headers = {"Content-Type": "application/json"}
@@ -79,8 +80,34 @@ class UgigClient:
             log.error(f"Login request error: {e}")
             return False
 
+    def _get_coin_price_usd(self, coin: str) -> float:
+        """Fetch live coin price from Coinbase API, with conservative local fallbacks."""
+        coin = coin.upper().strip()
+        if coin in ("USDC", "USDT", "USD"):
+            return 1.0
+            
+        if hasattr(self, "_price_cache") and coin in self._price_cache:
+            return self._price_cache[coin]
+            
+        fallbacks = {
+            "SOL": 130.0,
+            "BTC": 60000.0,
+            "ETH": 3300.0,
+        }
+        
+        try:
+            r = requests.get(f"https://api.coinbase.com/v2/prices/{coin}-USD/spot", timeout=5)
+            if r.status_code == 200:
+                price = float(r.json()["data"]["amount"])
+                self._price_cache[coin] = price
+                return price
+        except Exception:
+            pass
+            
+        return fallbacks.get(coin, 1.0)
+
     def list_jobs(self, limit: int = 50) -> list[Job]:
-        """Fetch active gigs and return them as Job dataclass instances."""
+        """Fetch active gigs and return them as Job dataclass instances with normalized USD budgets."""
         url = f"{UGIG_BASE_URL}/api/gigs"
         params = {"limit": limit, "sort": "newest"}
         
@@ -102,12 +129,23 @@ class UgigClient:
                 cat = g.get("category", "other")
                 budget_max = float(g.get("budget_max") or g.get("budget_min") or 0.0)
                 
+                # Normalize budget based on payment coin
+                coin = g.get("payment_coin") or "USDC"
+                is_sats = "sats" in title.lower() or "satoshis" in title.lower() or str(coin).upper() in ("SATS", "LN")
+                
+                if is_sats:
+                    btc_price = self._get_coin_price_usd("BTC")
+                    reward_usd = budget_max * 1e-8 * btc_price
+                else:
+                    coin_price = self._get_coin_price_usd(coin)
+                    reward_usd = budget_max * coin_price
+                
                 job = Job(
                     id=str(jid),
                     platform="ugig",
                     title=title,
                     description=desc,
-                    reward_usd=budget_max,
+                    reward_usd=round(reward_usd, 4),
                     raw=g
                 )
                 jobs.append(job)
