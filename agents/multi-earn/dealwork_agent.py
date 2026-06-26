@@ -34,7 +34,7 @@ import requests
 
 # Add multi-earn dir to path for imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from job_scoring import Job, score_job
+from job_scoring import Job, score_job, execute_job_with_llm
 from prompt_templates import get_template
 from payouts_tracker import record_payout, is_category_busy
 
@@ -388,6 +388,9 @@ def log_payout(job: Job, response: dict) -> None:
     with PAYOUTS_MD.open("a", encoding="utf-8") as fh:
         fh.write(entry)
 
+    from job_scoring import get_client_id_from_raw
+    client_id = get_client_id_from_raw(job.raw)
+
     # Log to unified payouts database
     record_payout(
         platform="dealwork",
@@ -397,7 +400,8 @@ def log_payout(job: Job, response: dict) -> None:
         reward_usd=float(payout),
         status=status,
         estimated_minutes=job.estimated_minutes,
-        notes=f"TX: {tx}"
+        notes=f"TX: {tx}",
+        client_id=client_id
     )
 
 
@@ -415,17 +419,20 @@ def sync_payout_statuses(jobs: list[dict]):
     if not known_ids:
         return
         
+    from job_scoring import get_client_id_from_raw
     for j in jobs:
         jid = str(j.get("id"))
         if jid in known_ids:
             status = j.get("status", "unknown")
+            client_id = get_client_id_from_raw(j)
             record_payout(
                 platform="dealwork",
                 job_id=jid,
                 title=j.get("title", ""),
                 category=j.get("type", "other") or "other",
                 reward_usd=parse_budget(j),
-                status=status
+                status=status,
+                client_id=client_id
             )
 
 
@@ -586,15 +593,9 @@ def process_job(client: DealworkClient, job_obj: Job, openrouter_key: str) -> bo
     except Exception:
         pass  # Chat is best-effort
 
-    # 3. Generate deliverable using template
-    template = get_template(job_obj.category)
-    prompt = template.format(
-        title=job_obj.title,
-        reward=job_obj.reward_usd,
-        description=job_obj.description
-    )
+    # 3. Generate deliverable using unified execution helper
     try:
-        deliverable = llm_generate(prompt, openrouter_key)
+        deliverable = execute_job_with_llm(job_obj, openrouter_key)
         log.info("Deliverable generated (%d chars) for job %s", len(deliverable), jid)
     except Exception as exc:
         log.error("LLM generation failed for job %s: %s", jid, exc)

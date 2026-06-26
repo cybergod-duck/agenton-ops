@@ -25,7 +25,7 @@ from datetime import datetime
 
 # Add multi-earn dir to path for imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from job_scoring import Job, score_job
+from job_scoring import Job, score_job, execute_job_with_llm
 from prompt_templates import get_template
 from payouts_tracker import record_payout, is_category_busy
 
@@ -129,37 +129,7 @@ def fetch_task_detail(task_id: str, session: str) -> dict:
     return r.json()
 
 
-# ── LLM Execution ─────────────────────────────────────────────────────────────
-def execute_task_with_llm(job: Job, keys: dict) -> str | None:
-    template = get_template(job.category)
-    prompt = template.format(
-        title=job.title,
-        reward=job.reward_usd,
-        description=job.description
-    )
-
-    or_key = keys.get("OPENROUTER_API_KEY")
-    if not or_key:
-        return None
-
-    try:
-        r = requests.post(
-            "https://openrouter.ai/api/v1/chat/completions",
-            headers={"Authorization": f"Bearer {or_key}", "Content-Type": "application/json"},
-            json={
-                "model": "google/gemini-2.5-flash",
-                "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": 3000
-            },
-            timeout=90
-        )
-        if r.status_code == 200:
-            return r.json()["choices"][0]["message"]["content"].strip()
-        print(f"[CE] LLM error {r.status_code}: {r.text[:200]}")
-        return None
-    except Exception as e:
-        print(f"[CE] LLM failed: {e}")
-        return None
+# LLM execution is handled by execute_job_with_llm in job_scoring.py
 
 
 # ── Task Submission ────────────────────────────────────────────────────────────
@@ -325,8 +295,13 @@ def main():
 
         print(f"\n[CE] Processing task '{title}' (${reward:.2f}, {category})")
 
-        # Execute with LLM
-        deliverable = execute_task_with_llm(evaluated_job, keys)
+        # Execute with LLM using unified execution helper
+        try:
+            deliverable = execute_job_with_llm(evaluated_job, keys.get("OPENROUTER_API_KEY"))
+        except Exception as e:
+            print(f"[CE] LLM failed for {task_id}: {e}")
+            deliverable = None
+            
         if not deliverable:
             print(f"[CE] LLM failed for {task_id} — skip")
             log_submission(task_id, title, reward, "skipped", "LLM failed")
@@ -339,6 +314,9 @@ def main():
             log_submission(task_id, title, reward, "submitted", "48h auto-approve pending")
             log_payout(f"Claw Earn: {title[:40]}", reward, f"Task {task_id}")
             
+            from job_scoring import get_client_id_from_raw
+            client_id = get_client_id_from_raw(evaluated_job.raw)
+            
             # Record payout to unified telemetry
             record_payout(
                 platform="claw earn",
@@ -347,7 +325,8 @@ def main():
                 category=evaluated_job.category,
                 reward_usd=reward,
                 status="submitted",
-                notes="48h auto-approve pending"
+                notes="48h auto-approve pending",
+                client_id=client_id
             )
             
             submitted += 1

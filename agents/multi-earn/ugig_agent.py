@@ -20,7 +20,7 @@ import requests
 
 # Add directory to sys.path for importing job_scoring & ugig_client
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from job_scoring import Job, score_job, LLM_MODEL, LLM_API_BASE
+from job_scoring import Job, score_job, execute_job_with_llm, LLM_MODEL, LLM_API_BASE
 from ugig_client import UgigClient
 from prompt_templates import get_template
 from payouts_tracker import record_payout, is_category_busy
@@ -175,28 +175,7 @@ def onboard_agent(env: dict) -> UgigClient:
 
 # ── LLM Work Execution ────────────────────────────────────────────────────────
 def generate_work_with_llm(job: Job, openrouter_key: str) -> str:
-    template = get_template(job.category)
-    prompt = template.format(
-        title=job.title,
-        reward=job.reward_usd,
-        description=job.description
-    )
-    url = f"{LLM_API_BASE}/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {openrouter_key}",
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://github.com/BCR-AgentOn",
-        "X-Title": "BCR-AgentOn-UgigAgent",
-    }
-    payload = {
-        "model": LLM_MODEL,
-        "messages": [{"role": "user", "content": prompt}],
-        "max_tokens": 4000,
-        "temperature": 0.5,
-    }
-    r = requests.post(url, headers=headers, json=payload, timeout=120)
-    r.raise_for_status()
-    return r.json()["choices"][0]["message"]["content"].strip()
+    return execute_job_with_llm(job, openrouter_key)
 
 # ── Logging Helpers ───────────────────────────────────────────────────────────
 def ensure_output_files():
@@ -230,6 +209,8 @@ def log_payout(job: Job, status: str = "Pending approval"):
         f"- **Status**: {status}\n"
         f"- **Expected payout**: {job.reward_usd} USD\n\n---\n\n"
     )
+    from job_scoring import get_client_id_from_raw
+    client_id = get_client_id_from_raw(job.raw)
     with PAYOUTS_MD.open("a", encoding="utf-8") as fh:
         fh.write(entry)
         
@@ -241,7 +222,8 @@ def log_payout(job: Job, status: str = "Pending approval"):
         category=job.category,
         reward_usd=job.reward_usd,
         status=status,
-        estimated_minutes=job.estimated_minutes
+        estimated_minutes=job.estimated_minutes,
+        client_id=client_id
     )
 
 # ── Git Sync ──────────────────────────────────────────────────────────────────
@@ -278,14 +260,17 @@ def update_payouts_status(client: UgigClient):
         
         # Sync each application to payouts.json
         try:
+            from job_scoring import get_client_id_from_raw
             gig_data = app.get("gig", {})
+            client_id = get_client_id_from_raw(gig_data)
             record_payout(
                 platform="ugig.net",
                 job_id=str(gid),
                 title=gig_data.get("title", "Unknown"),
                 category=gig_data.get("category", "other") or "other",
                 reward_usd=float(app.get("proposed_rate") or gig_data.get("budget_max") or 0.0),
-                status=display_status
+                status=display_status,
+                client_id=client_id
             )
         except Exception as e:
             log.warning(f"Failed to record payouts.json for gig {gid}: {e}")

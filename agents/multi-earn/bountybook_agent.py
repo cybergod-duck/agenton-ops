@@ -27,7 +27,7 @@ from pathlib import Path
 
 # Add multi-earn dir to path for imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from job_scoring import Job, score_job
+from job_scoring import Job, score_job, execute_job_with_llm, get_client_id_from_raw
 from prompt_templates import get_template
 from payouts_tracker import record_payout, is_category_busy
 
@@ -142,51 +142,7 @@ def clean_json(text: str) -> str:
         text = text[:-3]
     return text.strip()
 
-def execute_job_with_llm(job: dict, keys: dict, category: str) -> dict | None:
-    """Use LLM to generate a deliverable for a BountyBook job."""
-    title = job.get("title", "")
-    desc  = job.get("description", "")
-    spec  = job.get("spec", {})
-    instructions    = spec.get("instructions", desc)
-    submission_fmt  = job.get("submissionFormat", "text")
-
-    template = get_template(category)
-    prompt = template.format(
-        title=title,
-        reward=job.get("budget_usdc") or job.get("budget") or 0.0,
-        description=instructions
-    )
-
-    or_key = keys.get("OPENROUTER_API_KEY")
-    if not or_key:
-        print("[BB] No OPENROUTER_API_KEY — skipping LLM execution")
-        return None
-
-    try:
-        r = requests.post(
-            "https://openrouter.ai/api/v1/chat/completions",
-            headers={"Authorization": f"Bearer {or_key}", "Content-Type": "application/json"},
-            json={
-                "model": "google/gemini-2.5-flash",
-                "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": 2000
-            },
-            timeout=60
-        )
-        if r.status_code == 200:
-            content = r.json()["choices"][0]["message"]["content"].strip()
-            if submission_fmt == "json":
-                try:
-                    return {"output": json.loads(clean_json(content))}
-                except Exception:
-                    return {"output": content}
-            return {"output": content}
-        else:
-            print(f"[BB] LLM API error {r.status_code}: {r.text[:200]}")
-            return None
-    except Exception as e:
-        print(f"[BB] LLM execution failed: {e}")
-        return None
+# LLM execution is handled by execute_job_with_llm in job_scoring.py
 
 # ── Job Claim + Submit ─────────────────────────────────────────────────────────
 def claim_job(job_id: str, address: str, token: str) -> bool:
@@ -374,11 +330,12 @@ def main():
 
             # Execute with LLM
             print(f"[BB] Running LLM to generate deliverable...")
-            output = execute_job_with_llm(full_job, keys, evaluated_job.category)
-            if not output:
+            deliverable = execute_job_with_llm(evaluated_job, keys.get("OPENROUTER_API_KEY"))
+            if not deliverable:
                 print(f"[BB] LLM failed for {job_id} — skipping")
                 log_submission(job_id, title, budget, "skipped", "LLM execution failed")
                 continue
+            output = {"output": deliverable}
 
             # Claim
             if not claim_job(job_id, address, token):
@@ -395,6 +352,7 @@ def main():
                 log_payout(f"BountyBook: {title[:40]}", budget * 0.96, f"Job {job_id} | 4% platform fee")
                 
                 # Record payout to unified telemetry
+                client_id = get_client_id_from_raw(evaluated_job.raw)
                 record_payout(
                     platform="bountybook",
                     job_id=str(job_id),
@@ -403,7 +361,8 @@ def main():
                     reward_usd=budget * 0.96,
                     status="submitted",
                     estimated_minutes=evaluated_job.estimated_minutes,
-                    notes="Oracle pending | 4% platform fee"
+                    notes="Oracle pending | 4% platform fee",
+                    client_id=client_id
                 )
                 
                 submitted_count += 1

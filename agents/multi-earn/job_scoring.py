@@ -165,6 +165,78 @@ def get_historical_rates(platform: str, category: str) -> tuple[float, float]:
             
     return round(accept_rate, 4), round(realized_ratio, 4)
 
+def get_client_id_from_raw(raw_dict: dict) -> str:
+    if not raw_dict or not isinstance(raw_dict, dict):
+        return "unknown_client"
+    # Try all common fields
+    for field in ("client_id", "clientId", "created_by", "creator_id", "userId", "user_id", "poster_id", "posterId", "owner_id", "owner"):
+        val = raw_dict.get(field)
+        if val:
+            if isinstance(val, dict):
+                inner_id = val.get("id") or val.get("accountId")
+                if inner_id:
+                    return str(inner_id)
+            return str(val)
+    # Check nested poster field (for DealWork)
+    poster = raw_dict.get("poster")
+    if isinstance(poster, dict):
+        pid = poster.get("id") or poster.get("accountId")
+        if pid:
+            return str(pid)
+    return "unknown_client"
+
+def get_client_reputation_multiplier(platform: str, client_id: str) -> float:
+    """Combine client's accept ratio and rating into a single multiplier."""
+    if not client_id or client_id == "unknown_client":
+        return 1.0
+        
+    clients_file = AGENTON_DIR / "outputs" / "multi-earn" / "clients.json"
+    if not clients_file.exists():
+        return 1.0
+        
+    try:
+        data = json.loads(clients_file.read_text(encoding="utf-8"))
+        clients = data.get("clients", {})
+        key = f"{platform.lower().strip()}:{client_id.strip()}"
+        if key in clients:
+            c = clients[key]
+            jobs_total = int(c.get("jobs_total", 0))
+            jobs_accepted = int(c.get("jobs_accepted", 0))
+            rating = float(c.get("avg_rating", 0.0))
+            
+            if jobs_total < 3:
+                return 1.0 # not enough data
+                
+            accept_rate = jobs_accepted / jobs_total
+            
+            if accept_rate >= 0.9 and (rating >= 4.5 or rating == 0.0):
+                return 1.15
+            if accept_rate >= 0.75:
+                return 1.05
+            if accept_rate <= 0.4 or (rating > 0.0 and rating <= 3.0):
+                return 0.4
+            if accept_rate <= 0.6:
+                return 0.7
+    except Exception:
+        pass
+    return 1.0
+
+def token_efficiency_multiplier(platform: str, category: str) -> float:
+    """Retrieve token efficiency ratio and apply dynamic multiplier."""
+    try:
+        from payouts_tracker import get_token_efficiency_ratio
+        ratio = get_token_efficiency_ratio(platform, category)
+    except Exception:
+        ratio = 0.0
+        
+    if ratio == 0:
+        return 1.0
+    if ratio <= 0.01:
+        return 1.05  # very efficient, small boost
+    if ratio >= 0.05:
+        return 0.8   # too expensive, penalize
+    return 1.0
+
 def calculate_score(job: Job) -> float:
     # 1. Platform Trust
     platform_trusts = {
@@ -198,7 +270,70 @@ def calculate_score(job: Job) -> float:
     accept_rate, realized_ratio = get_historical_rates(job.platform, job.category)
     score = base_score * (0.5 + 0.5 * accept_rate) * realized_ratio
     
+    # Apply client reputation & token efficiency multipliers
+    client_id = get_client_id_from_raw(job.raw)
+    client_mult = get_client_reputation_multiplier(job.platform, client_id)
+    token_mult = token_efficiency_multiplier(job.platform, job.category)
+    score = score * client_mult * token_mult
+    
     return round(score, 4)
+
+def execute_job_with_llm(job: Job, openrouter_key: str) -> str:
+    """
+    Standardised function to execute a job using Gemini-2.5-flash on OpenRouter.
+    Retrieves the correct prompt template based on category, queries LLM,
+    extracts token usage and cost from the response, logs it via payouts_tracker,
+    and returns the final deliverable.
+    """
+    from prompt_templates import get_template
+    from payouts_tracker import record_token_usage
+    
+    template = get_template(job.category)
+    prompt = template.format(
+        title=job.title,
+        reward=job.reward_usd,
+        description=job.description
+    )
+    
+    url = f"{LLM_API_BASE}/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {openrouter_key}",
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://github.com/BCR-AgentOn",
+        "X-Title": "BCR-AgentOn-WorkExecution",
+    }
+    payload = {
+        "model": LLM_MODEL,
+        "messages": [{"role": "user", "content": prompt}],
+        "max_tokens": 4000,
+        "temperature": 0.5,
+    }
+    
+    r = requests.post(url, headers=headers, json=payload, timeout=120)
+    r.raise_for_status()
+    resp_data = r.json()
+    content = resp_data["choices"][0]["message"]["content"].strip()
+    
+    usage = resp_data.get("usage", {})
+    prompt_tokens = usage.get("prompt_tokens", 0)
+    completion_tokens = usage.get("completion_tokens", 0)
+    
+    # Gemini-2.5-flash OpenRouter costs (Input: $0.075/1M, Output: $0.30/1M)
+    cost_usd = (prompt_tokens * 0.075 / 1_000_000) + (completion_tokens * 0.30 / 1_000_000)
+    
+    try:
+        record_token_usage(
+            platform=job.platform,
+            job_id=job.id,
+            model=LLM_MODEL,
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
+            cost_usd=cost_usd
+        )
+    except Exception as e:
+        log.warning(f"Failed to record token usage: {e}")
+        
+    return content
 
 def score_job(job: Job, openrouter_key: str) -> tuple[float, Job]:
     """Score a job, loading from cache if available, or calling LLM + saving."""
