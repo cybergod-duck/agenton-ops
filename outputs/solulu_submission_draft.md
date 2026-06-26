@@ -10,12 +10,12 @@
 
 ### 1. Telegram Group Screenshot
 Joined the official Telegram group **@SoluluUS** (via the Telethon user session `scout_user.session`).
-- **Telegram Proof:** [tg_group.png](file:///C:/BC%20RESEARCH/AI_FACTORY/agenton-ops/outputs/tg_group.png)
+- **Telegram Proof:** [tg_group.png](file:///C:/BC%20RESEARCH/AI_FACTORY/AgentOn/outputs/tg_group.png)
 
 ### 2. Solulu.cc Registration UID
 Registered the account using `j0b3@protonmail.com` and verified via OTP.
 - **Account UID:** `44357999`
-- **Dashboard Proof:** [solulu_registered.png](file:///C:/BC%20RESEARCH/AI_FACTORY/agenton-ops/outputs/solulu_registered.png)
+- **Dashboard Proof:** [solulu_registered.png](file:///C:/BC%20RESEARCH/AI_FACTORY/AgentOn/outputs/solulu_registered.png)
 
 ---
 

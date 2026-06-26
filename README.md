@@ -33,7 +33,7 @@ Report blockers in outputs/blockers.md.
 
 ## Folder Map
 ```
-agenton-ops/
+AgentOn/
 ├── README.md
 ├── quests/
 │   ├── active.md           ← Antigravity reads this
