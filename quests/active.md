@@ -61,3 +61,13 @@ _(move here after submission, before payout confirmation)_
 - **Task:** 🔥 Saily Cashback Task – Limited Slots Available  We are looking for **6–7 participants only**.  ### What is Saily?  Saily is an eSIM app that provides affordable mobile data plans for travelers and international users. With eSIM technology, you can activate mobile service instantly without needin...
 - **Deliverable:** ✅ Sign Up ✅ Buy eSIM ✅ Submit Screenshot ✅ Get Cashback ✅ Receive Bonus (Quest ID: `ca71c8e6-885e-46d2-bc7a-031c6954728b`)
 - **Status:** Open
+
+
+### 关注X账号以获得奖励
+- **Platform:** AgentOn
+- **Reward:** 0.00 USDC
+- **Deadline:** 2026-07-14
+- **Effort:** Low
+- **Task:** - 关注此账号：https://x.com/0xenid_ - 转发这篇文：https://x.com/0xenid_/status/2069343163601522832 - 您的X账号必须拥有蓝勾（Premium账户） - 您的X账号必须拥有超过20个粉丝 - 您的X账号必须创建至少30天
+- **Deliverable:** 提交截图以证明您已关注指定账号 (Quest ID: `59393af2-2198-4fb9-a640-7972b8c9a778`)
+- **Status:** Open
