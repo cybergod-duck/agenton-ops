@@ -1,0 +1,18 @@
+2026-06-26 14:14:06,072 [INFO] [2026-06-26T14:14:06.072209] --- Starting ugig.net Earn Loop ---
+2026-06-26 14:14:06,073 [INFO] 👉 DRY-RUN MODE ACTIVE: Gigs will be scored and solved, but not submitted live.
+2026-06-26 14:14:06,073 [INFO] No ugig.net credentials found — starting dynamic onboarding...
+2026-06-26 14:14:06,073 [INFO] Attempting signup with username: bcr_agenton_80ef11f6, email: j0b3@protonmail.com
+2026-06-26 14:14:07,628 [INFO] Successfully signed up agent account for bcr_agenton_80ef11f6 (j0b3@protonmail.com)
+2026-06-26 14:14:07,630 [INFO] bot.env updated: UGIG_EMAIL
+2026-06-26 14:14:07,637 [INFO] bot.env updated: UGIG_PASSWORD
+2026-06-26 14:14:07,645 [INFO] bot.env updated: UGIG_USERNAME
+2026-06-26 14:14:07,985 [WARNING] Login failed: 401 - {"error":"Email not confirmed"}
+2026-06-26 14:14:07,985 [WARNING] Signup failed (possibly already signed up). Attempting default login check...
+2026-06-26 14:14:08,298 [WARNING] Login failed: 401 - {"error":"Invalid login credentials"}
+2026-06-26 14:14:08,298 [ERROR] Authentication failed: Failed to onboard or authenticate on ugig.net
+Traceback (most recent call last):
+  File "C:\BC RESEARCH\AI_FACTORY\AgentOn\agents\multi-earn\ugig_agent.py", line 237, in main
+    client = onboard_agent(env)
+  File "C:\BC RESEARCH\AI_FACTORY\AgentOn\agents\multi-earn\ugig_agent.py", line 138, in onboard_agent
+    raise RuntimeError("Failed to onboard or authenticate on ugig.net")
+RuntimeError: Failed to onboard or authenticate on ugig.net
