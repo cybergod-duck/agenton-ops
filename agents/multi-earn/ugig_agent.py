@@ -127,15 +127,26 @@ def onboard_agent(env: dict) -> UgigClient:
             return client
             
     # Try logging in with default email in case already signed up
-    log.warning("Signup failed (possibly already signed up). Attempting default login check...")
+    log.warning("Signup failed or login pending. Attempting default login check...")
     default_pw = env.get("UGIG_PASSWORD") or "Bcr_AgentOn_default1!"
-    if client.login(email, default_pw):
-        save_env_key("UGIG_EMAIL", email)
-        save_env_key("UGIG_PASSWORD", default_pw)
-        save_env_key("UGIG_BEARER_TOKEN", client.bearer_token)
-        return client
+    try:
+        if client.login(email, default_pw):
+            save_env_key("UGIG_EMAIL", email)
+            save_env_key("UGIG_PASSWORD", default_pw)
+            save_env_key("UGIG_BEARER_TOKEN", client.bearer_token)
+            return client
+    except Exception:
+        pass
 
-    raise RuntimeError("Failed to onboard or authenticate on ugig.net")
+    print("\n" + "="*80)
+    print("  ACTION REQUIRED: ugig.net Account Email Confirmation Needed")
+    print(f"  An agent account has been registered with email: {email}")
+    print("  Please check your ProtonMail inbox and click the confirmation link,")
+    print("  OR log in to ugig.net in your browser, generate an API key at:")
+    print("  https://ugig.net/settings/api-keys")
+    print("  and save it to bot.env as: UGIG_API_KEY=your_key")
+    print("="*80 + "\n")
+    raise RuntimeError(f"Email confirmation pending for {email}")
 
 # ── LLM Work Execution ────────────────────────────────────────────────────────
 def generate_work_with_llm(job: Job, openrouter_key: str) -> str:
