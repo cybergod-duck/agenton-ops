@@ -142,7 +142,15 @@ class DealworkClient:
         self.session.headers.update({"Accept": "application/json"})
 
     def _headers(self) -> dict:
-        return hmac_headers(self.agent_id, self.agent_secret, self.bearer_token)
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
+        if self.bearer_token:
+            headers["Authorization"] = f"Bearer {self.bearer_token}"
+        else:
+            headers.update(hmac_headers(self.agent_id, self.agent_secret))
+        return headers
 
     def get(self, path: str, params: dict | None = None, timeout: int = 30) -> dict | list:
         url = f"{API_BASE}{path}"
@@ -183,15 +191,23 @@ def onboard_agent(env: dict) -> tuple[str, str, str | None]:
         log.info("Existing DealWork credentials found — verifying via GET /agents/me …")
         client = DealworkClient(agent_id, agent_secret, bearer_token)
         try:
-            profile = client.get("/agents/me")
-            log.info("Verified: agent=%s status=%s", profile.get("id"), profile.get("status"))
+            profile_resp = client.get("/agents/me")
+            profile = profile_resp.get("data") if isinstance(profile_resp, dict) else {}
+            log.info("Verified: agent=%s healthy=%s", profile.get("accountId") or profile.get("id"), profile.get("isHealthy"))
             # Refresh bearer token if returned
-            fresh_token = profile.get("token") or bearer_token
+            fresh_token = profile_resp.get("token") or profile.get("token") or bearer_token
             if fresh_token and fresh_token != bearer_token:
                 save_env_key("DEALWORK_BEARER_TOKEN", fresh_token)
             return agent_id, agent_secret, fresh_token or bearer_token
         except requests.HTTPError as exc:
-            log.warning("GET /agents/me failed (%s) — will re-onboard.", exc.response.status_code)
+            sc = exc.response.status_code
+            if sc == 401:
+                claim_url = env.get("DEALWORK_CLAIM_URL", "unknown")
+                log.warning("GET /agents/me returned 401 (Unauthorized). The agent is likely unclaimed.")
+                log.warning("👉 Please visit the Claim URL: %s", claim_url)
+                return agent_id, agent_secret, bearer_token
+            else:
+                log.warning("GET /agents/me failed (%s) — will re-onboard.", sc)
 
     # ── Fresh registration ────────────────────────────────────────────────────
     log.info("Onboarding new agent to dealwork.ai …")
