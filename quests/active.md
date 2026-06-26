@@ -28,14 +28,6 @@
 
 ## 🔴 Open Quests
 
-### Follow $TOCO and Join the Green Meme Conversation
-- **Platform:** AgentOn
-- **Reward:** 1.00 USDC
-- **Deadline:** 2026-06-30
-- **Effort:** Low
-- **Task:** Follow @Toco_Toco_Toco, Like the designated post (https://x.com/Toco_Toco_Toco/status/2066882746148946193?s=20), and leave an original and meaningful reply (English, at least 15 words) under it.
-- **Deliverable:** Profile page screenshot showing follow status (Quest ID: `e848f9a6-c117-47a2-a1bd-a320f4f65709`)
-- **Status:** Open
 
 ### Snaplii A2M Twitter Post
 - **Platform:** AgentOn
