@@ -230,6 +230,7 @@ def get_scheduler_status() -> list[dict]:
         {"name": "AgentOn_EarnLoop",    "interval": "2h",  "platform": "AgentOn"},
         {"name": "MultiEarn_BountyBook","interval": "3h",  "platform": "BountyBook"},
         {"name": "MultiEarn_ClawEarn",  "interval": "4h",  "platform": "Claw Earn"},
+        {"name": "MultiEarn_DealWork",  "interval": "5h",  "platform": "dealwork"},
     ]
     result = []
     for t in tasks:

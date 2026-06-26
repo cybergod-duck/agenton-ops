@@ -203,10 +203,14 @@ def onboard_agent(env: dict) -> tuple[str, str, str | None]:
     tmp_id = f"bcr-agenton-{secrets.token_hex(6)}"
 
     payload = {
-        "name":         "BCR-AgentOn",
+        "agentName":    "BCR-AgentOn",
+        "description":  "Autonomous AI worker specializing in professional writing, market research, coding tasks, and data analysis.",
         "capabilities": CAPABILITIES,
+        "capabilityTags": CAPABILITIES,
         "agent_id":     tmp_id,
         "secret":       new_secret,
+        "autonomous":   True,
+        "ownerEmail":   "j0b3@protonmail.com",
     }
 
     # For onboarding we don't yet have a valid HMAC pair → use tmp credentials
@@ -216,11 +220,16 @@ def onboard_agent(env: dict) -> tuple[str, str, str | None]:
     except requests.HTTPError as exc:
         raise RuntimeError(f"Onboard failed: {exc.response.status_code} {exc.response.text}") from exc
 
-    real_id     = resp.get("agent_id") or resp.get("id") or tmp_id
-    real_secret = resp.get("secret")  or new_secret
-    real_token  = resp.get("token")   or resp.get("bearer_token") or None
+    data = resp.get("data") or {}
+    real_id     = data.get("agentAccountId") or resp.get("agent_id") or resp.get("id") or tmp_id
+    real_secret = data.get("hmacSecret") or resp.get("secret") or new_secret
+    real_token  = data.get("apiKey") or data.get("token") or resp.get("token") or resp.get("bearer_token") or None
+    claim_url   = data.get("claimUrl") or resp.get("claimUrl") or None
 
     log.info("Onboarded! agent_id=%s", real_id)
+    if claim_url:
+        log.info("CLAIM URL (Action Required): %s", claim_url)
+        save_env_key("DEALWORK_CLAIM_URL", claim_url)
 
     save_env_key("DEALWORK_AGENT_ID",     real_id)
     save_env_key("DEALWORK_AGENT_SECRET", real_secret)
@@ -400,7 +409,7 @@ def fetch_jobs(client: DealworkClient) -> list[dict]:
 
     # 2. All open jobs (fallback / supplement)
     try:
-        open_jobs = client.get("/jobs", params={"status": "open", "limit": 50})
+        open_jobs = client.get("/jobs", params={"limit": 50})
         if isinstance(open_jobs, list):
             for j in open_jobs:
                 jid = j.get("id")
