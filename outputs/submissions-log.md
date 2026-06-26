@@ -17,3 +17,4 @@
 | 2026-06-26 | Follow $TOCO and Join the Green Meme Conversation | `9bdc1acc-eb96-4e3e-a9a6-ca04c00169a2` | `c5bb0d1c-1eb9-4ca1-93c8-4e5fa4e144c3` | 25000000.00 | Submitted | Followed @Toco_Toco_Toco, liked a specified tweet, and left a relevant, original reply discussing the project's green value cycle, PancakeSwap launch, and meme culture integration. |
 | 2026-06-26 | 关注X账号以获得奖励 | `59393af2-2198-4fb9-a640-7972b8c9a778` | `07854215-0cfe-4a62-a48b-b8f4606465a4` | 0.00 | Submitted | Followed @0xenid_ and retweeted their specified post. Account must have X Premium, over 20 followers, and be older than 30 days. |
 | 2026-06-26 | 关注制定推特账号 | `7db22d43-c025-4782-92a5-760a58e28a09` | `e8ac39b7-810f-4fb3-b132-5235ee7d8a79` | 0.50 | Submitted | Followed the Twitter account @vito0526. |
+| 2026-06-26 | 關注X賬號：dreamcoinvip | `702c0315-d6bf-44ec-984f-fc0f360e80b7` | `d39bf6e6-225a-485c-af44-31b456da1985` | 0.00 | Submitted | Followed the X account @dreamcoinvip. |

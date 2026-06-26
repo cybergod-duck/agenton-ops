@@ -20,3 +20,5 @@ You are not permitted to perform this action. |
 | 2026-06-26 12:34:02 | POST /2/users/:id/retweets | 2069343163601522832 | $0.01 | Success |
 | 2026-06-26 12:34:48 | GET /2/users/by/username/:username | vito0526 | $0.01 | Success |
 | 2026-06-26 12:34:48 | POST /2/users/:id/following | 1478284704461721602 | $0.01 | Success |
+| 2026-06-26 12:35:30 | GET /2/users/by/username/:username | dreamcoinvip | $0.01 | Success |
+| 2026-06-26 12:35:30 | POST /2/users/:id/following | 1933135727963025409 | $0.01 | Success |

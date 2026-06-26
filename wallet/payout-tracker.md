@@ -25,6 +25,7 @@
 | 2026-06-26 | Follow $TOCO and Join the Green Meme Conversation (Automated) | 25000000.00 | Pending | Submission ID: c5bb0d1c-1eb9-4ca1-93c8-4e5fa4e144c3 |
 | 2026-06-26 | 关注X账号以获得奖励 (Automated) | 0.00 | Pending | Submission ID: 07854215-0cfe-4a62-a48b-b8f4606465a4 |
 | 2026-06-26 | 关注制定推特账号 (Automated) | 0.50 | Pending | Submission ID: e8ac39b7-810f-4fb3-b132-5235ee7d8a79 |
+| 2026-06-26 | 關注X賬號：dreamcoinvip (Automated) | 0.00 | Pending | Submission ID: d39bf6e6-225a-485c-af44-31b456da1985 |
 
 ## Totals
 | Period | Amount |
