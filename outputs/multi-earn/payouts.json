@@ -9,8 +9,114 @@
     "estimated_minutes": null,
     "actual_minutes": null,
     "created_at": "2026-06-26T18:32:19.791918+00:00",
-    "updated_at": "2026-06-26T18:34:35.792181+00:00",
+    "updated_at": "2026-06-26T19:03:11.910917+00:00",
     "resolved_at": null,
-    "notes": ""
+    "notes": "",
+    "client_id": "749cb703-2f6c-4d1a-8a68-72bfd55e490d",
+    "client_snapshot": {
+      "rating": 0.0,
+      "jobs_total": 1,
+      "jobs_paid": 0,
+      "last_feedback": ""
+    }
+  },
+  {
+    "platform": "ugig",
+    "job_id": "d9778d45-f0fc-46c7-a85f-710e20d928e2",
+    "title": "Stub (Token Recording)",
+    "category": "other",
+    "reward_usd": 0.0,
+    "status": "expected",
+    "created_at": "2026-06-26T19:03:19.878237+00:00",
+    "updated_at": "2026-06-26T19:03:19.878237+00:00",
+    "resolved_at": null,
+    "notes": "Initialized by record_token_usage",
+    "client_id": "unknown_client",
+    "client_snapshot": {},
+    "token_metrics": {
+      "llm_calls": [
+        {
+          "model": "google/gemini-2.5-flash",
+          "prompt_tokens": 184,
+          "completion_tokens": 684,
+          "cost_usd": 0.000219,
+          "timestamp": "2026-06-26T19:03:19.878237+00:00"
+        }
+      ],
+      "total_cost_usd": 0.000219
+    }
+  },
+  {
+    "platform": "ugig",
+    "job_id": "0869aeda-374f-42bc-8b50-dc900ac89dfa",
+    "title": "Stub (Token Recording)",
+    "category": "other",
+    "reward_usd": 0.0,
+    "status": "expected",
+    "created_at": "2026-06-26T19:03:34.186995+00:00",
+    "updated_at": "2026-06-26T19:03:34.186995+00:00",
+    "resolved_at": null,
+    "notes": "Initialized by record_token_usage",
+    "client_id": "unknown_client",
+    "client_snapshot": {},
+    "token_metrics": {
+      "llm_calls": [
+        {
+          "model": "google/gemini-2.5-flash",
+          "prompt_tokens": 153,
+          "completion_tokens": 1558,
+          "cost_usd": 0.00047887499999999997,
+          "timestamp": "2026-06-26T19:03:34.186995+00:00"
+        }
+      ],
+      "total_cost_usd": 0.00047887499999999997
+    }
+  },
+  {
+    "platform": "ugig",
+    "job_id": "cf21d32f-b505-407a-bc3b-624d8777ce68",
+    "title": "Stub (Token Recording)",
+    "category": "other",
+    "reward_usd": 0.0,
+    "status": "expected",
+    "created_at": "2026-06-26T19:03:38.369758+00:00",
+    "updated_at": "2026-06-26T19:03:38.369758+00:00",
+    "resolved_at": null,
+    "notes": "Initialized by record_token_usage",
+    "client_id": "unknown_client",
+    "client_snapshot": {},
+    "token_metrics": {
+      "llm_calls": [
+        {
+          "model": "google/gemini-2.5-flash",
+          "prompt_tokens": 155,
+          "completion_tokens": 380,
+          "cost_usd": 0.000125625,
+          "timestamp": "2026-06-26T19:03:38.369758+00:00"
+        }
+      ],
+      "total_cost_usd": 0.000125625
+    }
+  },
+  {
+    "platform": "ugig.net",
+    "job_id": "cf21d32f-b505-407a-bc3b-624d8777ce68",
+    "title": "I will pay you to make an ask or an offer on d0rz.com (must be legit no fake spam shit)",
+    "category": "other",
+    "reward_usd": 72.545,
+    "status": "applied (pending acceptance)",
+    "estimated_minutes": 15,
+    "actual_minutes": null,
+    "created_at": "2026-06-26T19:03:39.460214+00:00",
+    "updated_at": "2026-06-26T19:03:39.460214+00:00",
+    "resolved_at": null,
+    "notes": "",
+    "client_id": "749cb703-2f6c-4d1a-8a68-72bfd55e490d",
+    "client_snapshot": {
+      "rating": 0.0,
+      "jobs_total": 1,
+      "jobs_paid": 0,
+      "last_feedback": ""
+    }
   }
 ]

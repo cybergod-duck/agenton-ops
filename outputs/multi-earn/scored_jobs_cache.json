@@ -198,5 +198,15 @@
     "title": "I will pay you 100 sats to list your site on our new directory",
     "reward_usd": 100.0,
     "timestamp": "2026-06-26T18:18:24.169008+00:00"
+  },
+  "ugig:0869aeda-374f-42bc-8b50-dc900ac89dfa": {
+    "estimated_minutes": 15,
+    "category": "other",
+    "ambiguity": 0.5,
+    "complexity": "medium",
+    "score": 1.1018,
+    "title": "need testers to submit bugs, and create PRs to fix our quantum resistant messaging app",
+    "reward_usd": 54.4087,
+    "timestamp": "2026-06-26T19:03:21.568153+00:00"
   }
 }

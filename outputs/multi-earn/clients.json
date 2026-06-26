@@ -1,0 +1,13 @@
+{
+  "clients": {
+    "ugig.net:749cb703-2f6c-4d1a-8a68-72bfd55e490d": {
+      "platform": "ugig.net",
+      "client_id": "749cb703-2f6c-4d1a-8a68-72bfd55e490d",
+      "jobs_total": 2,
+      "jobs_accepted": 0,
+      "jobs_rejected": 0,
+      "avg_rating": 0.0,
+      "last_seen": "2026-06-26T19:03:39.460214+00:00"
+    }
+  }
+}

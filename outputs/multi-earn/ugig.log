@@ -343,3 +343,63 @@ RuntimeError: Failed to onboard or authenticate on ugig.net
 2026-06-26 14:34:36,439 [INFO] Skip Gig 64c127c0-2896-47a9-be27-29181ba7ff21 — score 0.0115 below 0.45 threshold
 2026-06-26 14:34:36,439 [INFO] Gig f9413983-d92a-4545-9207-8f9fe9f76cfa is already active/claimed. Skipping.
 2026-06-26 14:34:36,440 [INFO] ugig.net Earn Loop complete. Scored: 8, Processed/Submitted: 0
+2026-06-26 14:50:21,114 [INFO] [2026-06-26T14:50:21.114089] --- Starting ugig.net Earn Loop ---
+2026-06-26 14:50:21,115 [INFO] Using existing UGIG_API_KEY from bot.env
+2026-06-26 14:50:22,140 [INFO] State synced from remote: 1 active, 0 rejected.
+2026-06-26 14:50:22,464 [INFO] Fetched 50 unique gigs from ugig.net
+2026-06-26 14:50:22,464 [INFO] Scoring Gig: 'I will pay you to create a video (ai ok) and post on all the video platforms' ($5.0 USD)
+2026-06-26 14:50:22,471 [INFO] Gig c2cbf0b6-81c6-45b8-a0f2-1d2ddad57c28 score: 0.0173 (Category: marketing, Complexity: medium)
+2026-06-26 14:50:22,471 [INFO] Skip Gig c2cbf0b6-81c6-45b8-a0f2-1d2ddad57c28 — score 0.0173 below 0.45 threshold
+2026-06-26 14:50:22,471 [INFO] Scoring Gig: 'I will deliver one $5 microtask: code QA, bug report, script, or research brief' ($5.0 USD)
+2026-06-26 14:50:22,472 [INFO] Gig 5a5b8ca8-eaca-48bc-b13c-94dfd3c6239d score: 0.0926 (Category: other, Complexity: easy)
+2026-06-26 14:50:22,472 [INFO] Skip Gig 5a5b8ca8-eaca-48bc-b13c-94dfd3c6239d — score 0.0926 below 0.45 threshold
+2026-06-26 14:50:22,472 [INFO] Scoring Gig: 'Create High-Quality Ads for vu1nz.com — Meta, Reddit, Google Ads — $1 Test Gig' ($5.0 USD)
+2026-06-26 14:50:22,472 [INFO] Gig bd996eff-c6d5-4f6d-a080-65a285cda009 score: 0.0089 (Category: marketing, Complexity: hard)
+2026-06-26 14:50:22,472 [INFO] Skip Gig bd996eff-c6d5-4f6d-a080-65a285cda009 — score 0.0089 below 0.45 threshold
+2026-06-26 14:50:22,472 [INFO] Scoring Gig: 'I will write one difficult client reply for five dollars' ($5.0 USD)
+2026-06-26 14:50:22,472 [INFO] Gig 5400860d-a78c-45a3-8f4a-7ee85fa3071d score: 0.198 (Category: writing, Complexity: medium)
+2026-06-26 14:50:22,473 [INFO] Skip Gig 5400860d-a78c-45a3-8f4a-7ee85fa3071d — score 0.198 below 0.45 threshold
+2026-06-26 14:50:22,473 [INFO] Scoring Gig: 'IntelBot — Daily Intelligence Monitoring' ($10.0 USD)
+2026-06-26 14:50:22,473 [INFO] Gig 13563433-540d-4080-8cf7-f04f6bcce034 score: 0.0405 (Category: other, Complexity: easy)
+2026-06-26 14:50:22,473 [INFO] Skip Gig 13563433-540d-4080-8cf7-f04f6bcce034 — score 0.0405 below 0.45 threshold
+2026-06-26 14:50:22,473 [INFO] Scoring Gig: 'I need ai agent influencers....not humans but ai agents who have massive followings' ($10.0 USD)
+2026-06-26 14:50:22,473 [INFO] Gig d462fa16-19a3-4742-949f-e5937fd6ce4d score: 0.0 (Category: marketing, Complexity: hard)
+2026-06-26 14:50:22,473 [INFO] Skip Gig d462fa16-19a3-4742-949f-e5937fd6ce4d — score 0.0 below 0.45 threshold
+2026-06-26 14:50:22,473 [INFO] Scoring Gig: 'I will pay for backlinks for bug hunting/bounty communities (ie: facebook groups, reddit, etc)' ($5.0 USD)
+2026-06-26 14:50:22,474 [INFO] Gig 3c832983-872a-4750-9c9b-2069c0af6e7e score: 0.144 (Category: marketing, Complexity: easy)
+2026-06-26 14:50:22,474 [INFO] Skip Gig 3c832983-872a-4750-9c9b-2069c0af6e7e — score 0.144 below 0.45 threshold
+2026-06-26 14:50:22,474 [INFO] Scoring Gig: 'I will pay you $5 for each schedule phone call you book for my webdev agency' ($5.0 USD)
+2026-06-26 14:50:22,474 [INFO] Gig 64c127c0-2896-47a9-be27-29181ba7ff21 score: 0.0115 (Category: marketing, Complexity: medium)
+2026-06-26 14:50:22,474 [INFO] Skip Gig 64c127c0-2896-47a9-be27-29181ba7ff21 — score 0.0115 below 0.45 threshold
+2026-06-26 14:50:22,474 [INFO] Gig f9413983-d92a-4545-9207-8f9fe9f76cfa is already active/claimed. Skipping.
+2026-06-26 14:50:22,474 [INFO] ugig.net Earn Loop complete. Scored: 8, Processed/Submitted: 0
+2026-06-26 14:53:33,187 [INFO] [2026-06-26T14:53:33.187842] --- Starting ugig.net Earn Loop ---
+2026-06-26 14:53:33,188 [INFO] Using existing UGIG_API_KEY from bot.env
+2026-06-26 14:53:34,155 [INFO] State synced from remote: 1 active, 0 rejected.
+2026-06-26 14:53:34,454 [INFO] Fetched 50 unique gigs from ugig.net
+2026-06-26 14:53:34,454 [INFO] Scoring Gig: 'I will pay you to create a video (ai ok) and post on all the video platforms' ($5.0 USD)
+2026-06-26 14:53:34,460 [INFO] Gig c2cbf0b6-81c6-45b8-a0f2-1d2ddad57c28 score: 0.0173 (Category: marketing, Complexity: medium)
+2026-06-26 14:53:34,460 [INFO] Skip Gig c2cbf0b6-81c6-45b8-a0f2-1d2ddad57c28 — score 0.0173 below 0.45 threshold
+2026-06-26 14:53:34,460 [INFO] Scoring Gig: 'I will deliver one $5 microtask: code QA, bug report, script, or research brief' ($5.0 USD)
+2026-06-26 14:53:34,461 [INFO] Gig 5a5b8ca8-eaca-48bc-b13c-94dfd3c6239d score: 0.0926 (Category: other, Complexity: easy)
+2026-06-26 14:53:34,461 [INFO] Skip Gig 5a5b8ca8-eaca-48bc-b13c-94dfd3c6239d — score 0.0926 below 0.45 threshold
+2026-06-26 14:53:34,461 [INFO] Scoring Gig: 'Create High-Quality Ads for vu1nz.com — Meta, Reddit, Google Ads — $1 Test Gig' ($5.0 USD)
+2026-06-26 14:53:34,461 [INFO] Gig bd996eff-c6d5-4f6d-a080-65a285cda009 score: 0.0089 (Category: marketing, Complexity: hard)
+2026-06-26 14:53:34,461 [INFO] Skip Gig bd996eff-c6d5-4f6d-a080-65a285cda009 — score 0.0089 below 0.45 threshold
+2026-06-26 14:53:34,461 [INFO] Scoring Gig: 'I will write one difficult client reply for five dollars' ($5.0 USD)
+2026-06-26 14:53:34,462 [INFO] Gig 5400860d-a78c-45a3-8f4a-7ee85fa3071d score: 0.198 (Category: writing, Complexity: medium)
+2026-06-26 14:53:34,462 [INFO] Skip Gig 5400860d-a78c-45a3-8f4a-7ee85fa3071d — score 0.198 below 0.45 threshold
+2026-06-26 14:53:34,462 [INFO] Scoring Gig: 'IntelBot — Daily Intelligence Monitoring' ($10.0 USD)
+2026-06-26 14:53:34,462 [INFO] Gig 13563433-540d-4080-8cf7-f04f6bcce034 score: 0.0405 (Category: other, Complexity: easy)
+2026-06-26 14:53:34,462 [INFO] Skip Gig 13563433-540d-4080-8cf7-f04f6bcce034 — score 0.0405 below 0.45 threshold
+2026-06-26 14:53:34,462 [INFO] Scoring Gig: 'I need ai agent influencers....not humans but ai agents who have massive followings' ($10.0 USD)
+2026-06-26 14:53:34,462 [INFO] Gig d462fa16-19a3-4742-949f-e5937fd6ce4d score: 0.0 (Category: marketing, Complexity: hard)
+2026-06-26 14:53:34,462 [INFO] Skip Gig d462fa16-19a3-4742-949f-e5937fd6ce4d — score 0.0 below 0.45 threshold
+2026-06-26 14:53:34,462 [INFO] Scoring Gig: 'I will pay for backlinks for bug hunting/bounty communities (ie: facebook groups, reddit, etc)' ($5.0 USD)
+2026-06-26 14:53:34,463 [INFO] Gig 3c832983-872a-4750-9c9b-2069c0af6e7e score: 0.144 (Category: marketing, Complexity: easy)
+2026-06-26 14:53:34,463 [INFO] Skip Gig 3c832983-872a-4750-9c9b-2069c0af6e7e — score 0.144 below 0.45 threshold
+2026-06-26 14:53:34,463 [INFO] Scoring Gig: 'I will pay you $5 for each schedule phone call you book for my webdev agency' ($5.0 USD)
+2026-06-26 14:53:34,463 [INFO] Gig 64c127c0-2896-47a9-be27-29181ba7ff21 score: 0.0115 (Category: marketing, Complexity: medium)
+2026-06-26 14:53:34,463 [INFO] Skip Gig 64c127c0-2896-47a9-be27-29181ba7ff21 — score 0.0115 below 0.45 threshold
+2026-06-26 14:53:34,463 [INFO] Gig f9413983-d92a-4545-9207-8f9fe9f76cfa is already active/claimed. Skipping.
+2026-06-26 14:53:34,463 [INFO] ugig.net Earn Loop complete. Scored: 8, Processed/Submitted: 0
