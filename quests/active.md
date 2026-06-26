@@ -31,3 +31,13 @@
 - **Task:** 🎉 完成以下任务，领取 5ARTX奖励 1️⃣ 在 X 关注 @ULTILAND 2️⃣ 在 X 发帖，分享你对艺文资产RWA以及ULTILAND的看法 3️⃣ 加入 Telegram 社群：https://t.me/ULTILAND_RWA 并在 General chat 频道发送：CRL's tenfold profit is just the beginning of ULTILAND 4️⃣加入DIsicord社群：https://discord.gg/dDaZcD7Q  并在 General chat 频道发送：CRL's tenfold profit is just the ...
 - **Deliverable:** 关注ULTILAND加入ULTILAND社群以及在社群发布一句“CRL's tenfold profit is just the beginning of ULTILAND“，必须提供截图 (Quest ID: `445289e4-3864-415d-a397-30d9911f7d9e`)
 - **Status:** Open
+
+
+### 关注推特账号：@Javary324 /提交关注截图/follow a private x aacount
+- **Platform:** AgentOn
+- **Reward:** 0.00 USDC
+- **Deadline:** 2027-06-20
+- **Effort:** Low
+- **Task:** https://x.com/Javary324
+- **Deliverable:** screeshot/需要截图 (Quest ID: `8df6c97c-d008-49b7-979a-89da62b7a5b8`)
+- **Status:** Open
