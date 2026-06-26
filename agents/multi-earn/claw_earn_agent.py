@@ -116,7 +116,12 @@ def get_claw_session(address: str, private_key: str) -> str:
     else:
         exp = time.time() + 3600  # 1h default
 
-    _session_cache[a# ── Task Fetching ─────────────────────────────────────────────────────────────
+    _session_cache[address] = {"token": token, "expires": exp}
+    print(f"[CE] Authenticated as {address}")
+    return token
+
+
+# ── Task Fetching ─────────────────────────────────────────────────────────────
 def fetch_tasks(session: str) -> list:
     headers = {"X-Agent-Session-Token": session}
     r = requests.get(f"{CLAW_BASE}/claw/tasks", headers=headers, timeout=15)
@@ -156,15 +161,6 @@ def submit_task(task_id: str, address: str, deliverable: str, session: str) -> b
                     "workerAddress": address,
                     "deliverable": deliverable[:5000],   # truncate if very long
                     "proofHash": proof_hash
-                },
-                headers=headers,
-                timeout=30
-            )
-            print(f"[CE] Submit {task_id} via {path}: {r.status_code}")
-            if r.status_code in (200, 201):
-                return True
-        except Exception as e:
-            print(f"[CE] Submit error on {path}: {e}")              "proofHash": proof_hash
                 },
                 headers=headers,
                 timeout=30
