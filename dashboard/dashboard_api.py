@@ -148,6 +148,41 @@ def parse_dealwork_payouts() -> list[dict]:
         })
     return result
 
+def parse_ugig_payouts() -> list[dict]:
+    path = MULTI_EARN / "ugig-payouts.md"
+    result = []
+    if not path.exists():
+        return result
+    content = path.read_text(encoding="utf-8", errors="ignore")
+    # Split by blocks starting with ##
+    blocks = content.split("## ")
+    for block in blocks:
+        if not block.strip():
+            continue
+        # Parse title and ID
+        title_match = re.search(r"\[(.*?)\] — Gig `(.*?)`", block)
+        if not title_match:
+            continue
+        title = title_match.group(1)
+        # Parse time/date
+        time_match = re.search(r"-\s+\*\*Time\*\*:\s+([\d\-]+)", block)
+        date = time_match.group(1) if time_match else ""
+        # Parse expected payout
+        payout_match = re.search(r"-\s+\*\*Expected payout\*\*:\s+([\d\.]+)", block)
+        reward = float(payout_match.group(1)) if payout_match else 0.0
+        # Parse status
+        status_match = re.search(r"-\s+\*\*Status\*\*:\s+(.*?)\n", block)
+        status = status_match.group(1).strip() if status_match else "pending"
+        
+        result.append({
+            "date": date,
+            "title": title,
+            "reward": reward,
+            "platform": "ugig.net",
+            "status": status
+        })
+    return result
+
 def get_all_earnings() -> list[dict]:
     """Combine all platform earnings into one list."""
     all_earnings = []
@@ -155,7 +190,7 @@ def get_all_earnings() -> list[dict]:
     all_earnings.extend(get_platform_payouts("BountyBook", "bountybook-payouts.md"))
     all_earnings.extend(get_platform_payouts("Claw Earn", "claw-earn-payouts.md"))
     all_earnings.extend(parse_dealwork_payouts())
-    all_earnings.extend(get_platform_payouts("ugig.net", "ugig-payouts.md"))
+    all_earnings.extend(parse_ugig_payouts())
     return [e for e in all_earnings if e["reward"] > 0]
 
 def get_twitter_calls_today() -> int:
