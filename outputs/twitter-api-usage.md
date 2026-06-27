@@ -33,3 +33,9 @@ This Tweet cannot be found. |
 $.tweet_id: does not match the regex pattern ^[0-9]{1,19}$ |
 | 2026-06-27 10:00:21 | POST /2/users/:id/likes | Maneki AI specified tweet | $0.01 | Failed: 400 Bad Request
 $.tweet_id: does not match the regex pattern ^[0-9]{1,19}$ |
+| 2026-06-27 12:00:15 | POST /2/users/:id/likes | 1785536413280549040 | $0.01 | Failed: 400 Bad Request
+This tweet cannot be found. |
+| 2026-06-27 12:00:19 | POST /2/users/:id/likes | Maneki AI指定推文链接 | $0.01 | Failed: 400 Bad Request
+$.tweet_id: does not match the regex pattern ^[0-9]{1,19}$ |
+| 2026-06-27 12:00:20 | POST /2/users/:id/likes | Maneki AI 指定推文链接 | $0.01 | Failed: 400 Bad Request
+$.tweet_id: does not match the regex pattern ^[0-9]{1,19}$ |
