@@ -23,3 +23,7 @@ You are not permitted to perform this action. |
 | 2026-06-26 12:35:30 | GET /2/users/by/username/:username | dreamcoinvip | $0.01 | Success |
 | 2026-06-26 12:35:30 | POST /2/users/:id/following | 1933135727963025409 | $0.01 | Success |
 | 2026-06-26 12:36:11 | GET /2/users/by/username/:username | Javary324 | $0.01 | Success |
+| 2026-06-27 02:00:14 | GET /2/users/by/username/:username | dePick_Official | $0.01 | Success |
+| 2026-06-27 02:00:14 | POST /2/users/:id/following | 1909214065463091200 | $0.01 | Success |
+| 2026-06-27 02:00:14 | POST /2/users/:id/retweets | 1792440375496423984 | $0.01 | Failed: 400 Bad Request
+This Tweet cannot be found. |
