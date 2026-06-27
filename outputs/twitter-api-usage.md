@@ -29,3 +29,5 @@ You are not permitted to perform this action. |
 This Tweet cannot be found. |
 | 2026-06-27 08:00:15 | POST /2/users/:id/retweets | 1798363720760451368 | $0.01 | Failed: 400 Bad Request
 This Tweet cannot be found. |
+| 2026-06-27 10:00:19 | POST /2/users/:id/likes | Maneki AI specified tweet | $0.01 | Failed: 400 Bad Request
+$.tweet_id: does not match the regex pattern ^[0-9]{1,19}$ |

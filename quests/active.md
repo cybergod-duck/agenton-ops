@@ -140,3 +140,13 @@
 - Acceptance Criteria:
   - Submit purchase receipt screenshot.
 - Status: Open
+
+
+###  Engage with Maneki AI Campaign Post
+- **Platform:** AgentOn
+- **Reward:** 1.00 USDC
+- **Deadline:** 2026-07-04
+- **Effort:** Low
+- **Task:** 对推文进行点赞、评论、转发 提交转发推文的链接 评论不能是纯表情或无意义内容 不允许重复复制其他用户内容  原创推文需要艾特Maneki AI，推文至少30个英文单词 原创推文文案不能复制官方文案，提交原创推文链接
+- **Deliverable:** 1.点赞、转推并评论 Maneki AI 指定推文  2.发布一条关于 Maneki AI 的原创推文，介绍对 AI Trading Agent / Perp DEX / Autonomous  Execution看法 (Quest ID: `b5c18339-be7b-4949-9853-1d1005e07d22`)
+- **Status:** Open
