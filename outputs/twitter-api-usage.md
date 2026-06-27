@@ -31,3 +31,5 @@ This Tweet cannot be found. |
 This Tweet cannot be found. |
 | 2026-06-27 10:00:19 | POST /2/users/:id/likes | Maneki AI specified tweet | $0.01 | Failed: 400 Bad Request
 $.tweet_id: does not match the regex pattern ^[0-9]{1,19}$ |
+| 2026-06-27 10:00:21 | POST /2/users/:id/likes | Maneki AI specified tweet | $0.01 | Failed: 400 Bad Request
+$.tweet_id: does not match the regex pattern ^[0-9]{1,19}$ |
