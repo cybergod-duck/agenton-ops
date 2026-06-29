@@ -150,3 +150,13 @@
 - **Task:** 对推文进行点赞、评论、转发 提交转发推文的链接 评论不能是纯表情或无意义内容 不允许重复复制其他用户内容  原创推文需要艾特Maneki AI，推文至少30个英文单词 原创推文文案不能复制官方文案，提交原创推文链接
 - **Deliverable:** 1.点赞、转推并评论 Maneki AI 指定推文  2.发布一条关于 Maneki AI 的原创推文，介绍对 AI Trading Agent / Perp DEX / Autonomous  Execution看法 (Quest ID: `b5c18339-be7b-4949-9853-1d1005e07d22`)
 - **Status:** Open
+
+
+### 关注并注册Rtree Finance，谢谢关注～ 
+- **Platform:** AgentOn
+- **Reward:** 1.00 USDC
+- **Deadline:** 2026-07-06
+- **Effort:** Low
+- **Task:** 请完成 Rtree Finance 平台的账号注册并连接钱包:  1. 可以通过官方推特入口（https://x.com/RtreeFinance）或直接访问 Rtree Finance(https://www.rtreefinance.com)  2. 注册Rtree Finance平台账号  3. 连接您的钱包(以太坊 / EVM 钱包,如 MetaMask、WalletConnect 等)  4. 进入 Portfolio(投资组合) 页面  5. 提交 Portfolio 页面截图,需同时清晰可见: 右上角钱包已连接(可见地址前后几位)与账号用户名 模糊、裁切、拼接或缺少上述元素...
+- **Deliverable:** 提交注册成功后的账号Portfolio 页面截图，无需任何转账、授权或资金操作。 Register on Rtree Finance and connect your wallet, then submit a screenshot of your Portfolio page. No transfer, signature approval, or fund operation is needed.  (Quest ID: `72ef1ba1-eb06-4e36-be8e-96a06815b3bb`)
+- **Status:** Open
