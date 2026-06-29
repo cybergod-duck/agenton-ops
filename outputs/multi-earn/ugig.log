@@ -1498,3 +1498,27 @@ RuntimeError: Failed to onboard or authenticate on ugig.net
 2026-06-29 11:43:04,118 [INFO] Fetched 50 unique gigs from ugig.net
 2026-06-29 11:43:04,118 [INFO] Reached maximum concurrent active claims (3). Skipping new claims.
 2026-06-29 11:43:04,118 [INFO] ugig.net Earn Loop complete. Scored: 0, Processed/Submitted: 0
+2026-06-29 12:13:02,095 [INFO] [2026-06-29T12:13:02.095710] --- Starting ugig.net Earn Loop ---
+2026-06-29 12:13:02,096 [INFO] 👉 DRY-RUN MODE ACTIVE: Gigs will be scored and solved, but not submitted live.
+2026-06-29 12:13:02,096 [INFO] Using existing UGIG_API_KEY from bot.env
+2026-06-29 12:13:04,056 [INFO] Fetched 50 unique gigs from ugig.net
+2026-06-29 12:13:04,057 [INFO] Reached maximum concurrent active claims (3). Skipping new claims.
+2026-06-29 12:13:04,058 [INFO] ugig.net Earn Loop complete. Scored: 0, Processed/Submitted: 0
+2026-06-29 12:43:02,170 [INFO] [2026-06-29T12:43:02.170042] --- Starting ugig.net Earn Loop ---
+2026-06-29 12:43:02,170 [INFO] 👉 DRY-RUN MODE ACTIVE: Gigs will be scored and solved, but not submitted live.
+2026-06-29 12:43:02,170 [INFO] Using existing UGIG_API_KEY from bot.env
+2026-06-29 12:43:04,062 [INFO] Fetched 50 unique gigs from ugig.net
+2026-06-29 12:43:04,062 [INFO] Reached maximum concurrent active claims (3). Skipping new claims.
+2026-06-29 12:43:04,062 [INFO] ugig.net Earn Loop complete. Scored: 0, Processed/Submitted: 0
+2026-06-29 13:13:02,173 [INFO] [2026-06-29T13:13:02.173271] --- Starting ugig.net Earn Loop ---
+2026-06-29 13:13:02,174 [INFO] 👉 DRY-RUN MODE ACTIVE: Gigs will be scored and solved, but not submitted live.
+2026-06-29 13:13:02,174 [INFO] Using existing UGIG_API_KEY from bot.env
+2026-06-29 13:13:04,028 [INFO] Fetched 50 unique gigs from ugig.net
+2026-06-29 13:13:04,028 [INFO] Reached maximum concurrent active claims (3). Skipping new claims.
+2026-06-29 13:13:04,028 [INFO] ugig.net Earn Loop complete. Scored: 0, Processed/Submitted: 0
+2026-06-29 13:43:02,202 [INFO] [2026-06-29T13:43:02.202017] --- Starting ugig.net Earn Loop ---
+2026-06-29 13:43:02,202 [INFO] 👉 DRY-RUN MODE ACTIVE: Gigs will be scored and solved, but not submitted live.
+2026-06-29 13:43:02,202 [INFO] Using existing UGIG_API_KEY from bot.env
+2026-06-29 13:43:04,110 [INFO] Fetched 50 unique gigs from ugig.net
+2026-06-29 13:43:04,110 [INFO] Reached maximum concurrent active claims (3). Skipping new claims.
+2026-06-29 13:43:04,111 [INFO] ugig.net Earn Loop complete. Scored: 0, Processed/Submitted: 0
