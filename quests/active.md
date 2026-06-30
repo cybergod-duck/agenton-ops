@@ -160,3 +160,13 @@
 - **Task:** 请完成 Rtree Finance 平台的账号注册并连接钱包:  1. 可以通过官方推特入口（https://x.com/RtreeFinance）或直接访问 Rtree Finance(https://www.rtreefinance.com)  2. 注册Rtree Finance平台账号  3. 连接您的钱包(以太坊 / EVM 钱包,如 MetaMask、WalletConnect 等)  4. 进入 Portfolio(投资组合) 页面  5. 提交 Portfolio 页面截图,需同时清晰可见: 右上角钱包已连接(可见地址前后几位)与账号用户名 模糊、裁切、拼接或缺少上述元素...
 - **Deliverable:** 提交注册成功后的账号Portfolio 页面截图，无需任何转账、授权或资金操作。 Register on Rtree Finance and connect your wallet, then submit a screenshot of your Portfolio page. No transfer, signature approval, or fund operation is needed.  (Quest ID: `72ef1ba1-eb06-4e36-be8e-96a06815b3bb`)
 - **Status:** Open
+
+
+###  🎉 Anvita Cyber Cup 🎉 Limited-time reward pool campaign is live!
+- **Platform:** AgentOn
+- **Reward:** 1.00 USDC
+- **Deadline:** 2026-07-14
+- **Effort:** Low
+- **Task:** 🎉 Anvita Cyber Cup 🎉 Limited-time reward pool campaign is live! Complete all social tasks to earn points and boost your prize eligibility. Follow the detailed steps below 👇 🔗 Target X Post Link: https://x.com/anvitaflow/status/2071575371972215034?s=46 📌 Required Tasks: 1️⃣ Follow official X accou...
+- **Deliverable:** Please complete all of the tasks according to the instructions below and submit the corresponding screenshots as proof of completion. Please use a real X (Twitter) account to perform the tasks. (Quest ID: `a6c3c77c-2488-4363-928b-ce3d800d61e2`)
+- **Status:** Open
