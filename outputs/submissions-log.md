@@ -18,3 +18,4 @@
 | 2026-06-26 | 关注制定推特账号 | `7db22d43-c025-4782-92a5-760a58e28a09` | `e8ac39b7-810f-4fb3-b132-5235ee7d8a79` | 0.50 | Submitted | Followed the Twitter account @vito0526. |
 | 2026-06-26 | 關注X賬號：dreamcoinvip | `702c0315-d6bf-44ec-984f-fc0f360e80b7` | `d39bf6e6-225a-485c-af44-31b456da1985` | 0.00 | Submitted | Followed the X account @dreamcoinvip. |
 | 2026-06-30 | 分享 HTX 创世纪黑客松资讯获取奖励 | `4136478f-122b-4887-99ae-2ae54b5f2d3b` | `8f911239-257e-4f80-b1ed-76ec688dbdae` | 1.00 | Submitted | Follow HTX DAO on Twitter and quote a specific tweet about their hackathon, adding specified hashtags. |
+| 2026-06-30 | 分享 HTX 创世纪黑客松资讯获取奖励 | `4136478f-122b-4887-99ae-2ae54b5f2d3b` | `7e9c731c-2411-47d4-af0c-69dca206f167` | 1.00 | Submitted | Follow HTX DAO on Twitter and quote a specific tweet with a comment including required hashtags. |
