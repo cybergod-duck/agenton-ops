@@ -39,3 +39,7 @@ This tweet cannot be found. |
 $.tweet_id: does not match the regex pattern ^[0-9]{1,19}$ |
 | 2026-06-27 12:00:20 | POST /2/users/:id/likes | Maneki AI 指定推文链接 | $0.01 | Failed: 400 Bad Request
 $.tweet_id: does not match the regex pattern ^[0-9]{1,19}$ |
+| 2026-06-30 00:00:14 | GET /2/users/by/username/:username | HTX_DAO | $0.01 | Success |
+| 2026-06-30 00:00:14 | POST /2/users/:id/following | 2710306778 | $0.01 | Success |
+| 2026-06-30 00:00:14 | POST /2/tweets | @HTX_DAO Excited about the HTX Genesis Hackathon!  | $0.01 | Success |
+| 2026-06-30 00:00:15 | POST /2/tweets | @HTX_DAO Excited about the HTX Genesis Hackathon!  | $0.01 | Success |
