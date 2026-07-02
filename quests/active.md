@@ -180,3 +180,13 @@
 - **Task:** Join the twin3 Discord to earn rewards.
 - **Deliverable:**  (Quest ID: `d706d906-6648-4ec1-85f9-25a1b38494f4`)
 - **Status:** Open
+
+
+### 注册ULTILAND dapp 内账户
+- **Platform:** AgentOn
+- **Reward:** 5.00 USDC
+- **Deadline:** 2026-07-10
+- **Effort:** Low
+- **Task:** 1️⃣：在DAPP中注册账户 2️⃣：在个人设置中绑定自己的X账号以及DISCORD账号
+- **Deliverable:**  (Quest ID: `9906fe09-86cc-408b-b2f8-a48994ed863f`)
+- **Status:** Open
