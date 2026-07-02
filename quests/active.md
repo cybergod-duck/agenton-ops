@@ -190,3 +190,13 @@
 - **Task:** 1️⃣：在DAPP中注册账户 2️⃣：在个人设置中绑定自己的X账号以及DISCORD账号
 - **Deliverable:**  (Quest ID: `9906fe09-86cc-408b-b2f8-a48994ed863f`)
 - **Status:** Open
+
+
+### 关注ULTILAND   X账号，以及进入DISCORD TG 社群 转发置顶贴文
+- **Platform:** AgentOn
+- **Reward:** 5.00 USDC
+- **Deadline:** 2026-07-10
+- **Effort:** Low
+- **Task:** 1️⃣：关注 ULTILAND X账号 2️⃣：进入DISCORD社群 🔗：https://discord.gg/Aa24FXm2K 3️⃣：进入TG社群🔗：https://t.me/+MUaccY-QZ9VmMmE1
+- **Deliverable:**  (Quest ID: `845dec07-12fa-42cf-9a0a-f469f87ab1b9`)
+- **Status:** Open
