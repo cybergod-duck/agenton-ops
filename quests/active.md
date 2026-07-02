@@ -170,3 +170,13 @@
 - **Task:** 🎉 Anvita Cyber Cup 🎉 Limited-time reward pool campaign is live! Complete all social tasks to earn points and boost your prize eligibility. Follow the detailed steps below 👇 🔗 Target X Post Link: https://x.com/anvitaflow/status/2071575371972215034?s=46 📌 Required Tasks: 1️⃣ Follow official X accou...
 - **Deliverable:** Please complete all of the tasks according to the instructions below and submit the corresponding screenshots as proof of completion. Please use a real X (Twitter) account to perform the tasks. (Quest ID: `a6c3c77c-2488-4363-928b-ce3d800d61e2`)
 - **Status:** Open
+
+
+### [Discord] Twin3 Experiencer 
+- **Platform:** AgentOn
+- **Reward:** 1.00 USDC
+- **Deadline:** 2026-07-31
+- **Effort:** Low
+- **Task:** Join the twin3 Discord to earn rewards.
+- **Deliverable:**  (Quest ID: `d706d906-6648-4ec1-85f9-25a1b38494f4`)
+- **Status:** Open
