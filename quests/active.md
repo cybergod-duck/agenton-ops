@@ -200,3 +200,13 @@
 - **Task:** 1️⃣：关注 ULTILAND X账号 2️⃣：进入DISCORD社群 🔗：https://discord.gg/Aa24FXm2K 3️⃣：进入TG社群🔗：https://t.me/+MUaccY-QZ9VmMmE1
 - **Deliverable:**  (Quest ID: `845dec07-12fa-42cf-9a0a-f469f87ab1b9`)
 - **Status:** Open
+
+
+### 在Rtree Finance认购活动项目5 USDC，即领5USDC奖励，快来领取你的"无风险收益”
+- **Platform:** AgentOn
+- **Reward:** 5.00 USDC
+- **Deadline:** 2026-07-06
+- **Effort:** Low
+- **Task:** 1. 访问 Rtree Finance 产品页面：https://www.rtreefinance.com/marketDetails?id=6a485ec9983e930df43de362，完成不少于 5 USDC 的产品认购 2. 认购成功后，提交 Portfolio 页面截图，需完整显示： 已连接钱包地址及右上角账号； 1）Portfolio Balance、Number of Holdings、RTree Tokens、RTree Points 四项数据。 2）截图需清晰完整，裁剪、拼接、模糊或信息缺失将不予通过。  【审核规则】 每个账号及钱包仅限参与一次，重复提交无效； 严禁...
+- **Deliverable:**  (Quest ID: `80609c32-c4b2-48f1-9d77-561a07d07bd9`)
+- **Status:** Open
