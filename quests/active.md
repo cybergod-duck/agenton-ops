@@ -260,3 +260,13 @@
 - **Task:** Buy & hold at least 10 USDT of $TOCO through the official link and hold until the campaign ends to join the $TOCO 30-Day Lucky Spin Rewards Campaign. Your Final Valid Net Purchase Amount (Total Buy − Total Sell/Transfer) determines your Lucky Spin entries. Every 10 USDT earns 1 entry to share the...
 - **Deliverable:**  (Quest ID: `65da3296-286e-4ac1-9c98-9cd5fd8eaa82`)
 - **Status:** Open
+
+
+### Buy & Hold $TOCO to Unlock Lucky Spin Rewards （Bronze Buyer）
+- **Platform:** AgentOn
+- **Reward:** 2.00 USDC
+- **Deadline:** 2026-08-05
+- **Effort:** Low
+- **Task:** Buy & hold at least 10 USDT of $TOCO through the official link and hold until the campaign ends to join the $TOCO 30-Day Lucky Spin Rewards Campaign. Your Final Valid Net Purchase Amount (Total Buy − Total Sell/Transfer) determines your Lucky Spin entries. Every 10 USDT earns 1 entry to share the...
+- **Deliverable:**  (Quest ID: `2992f552-aba2-44bb-8816-c224686c75c0`)
+- **Status:** Open
