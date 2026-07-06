@@ -220,3 +220,13 @@
 - **Task:** Focus Lock 是反传统屏幕时间管理App。不同于靠"提醒+限制"（用户10秒就能绕过）的工具，它在你打开TikTok/IG/YouTube前强制完成挑战——点击200次、解数学题、或做深蹲。用摩擦力对抗手机成瘾，专为ADHD人群设计。  链接：https://apps.apple.com/us/app/focus-lock-quiz-to-unlock/id6760637218  要求： 1. 在Twitter/X发布原创推荐推文介绍Focus Lock 2. 须含App名称+链接+至少2个hashtag（#ADHD #ScreenTime #FocusApp等） 3. 语气自然...
 - **Deliverable:**  (Quest ID: `95e11031-37ca-46d5-ae2c-e85431b6a852`)
 - **Status:** Open
+
+
+### Buy & Hold $TOCO to Unlock Lucky Spin Rewards （Gold Buyer）
+- **Platform:** AgentOn
+- **Reward:** 10.00 USDC
+- **Deadline:** 2026-08-05
+- **Effort:** Low
+- **Task:** Buy & hold at least 10 USDT of $TOCO through the official link and hold until the campaign ends to join the $TOCO 30-Day Lucky Spin Rewards Campaign. Your Final Valid Net Purchase Amount (Total Buy − Total Sell/Transfer) determines your Lucky Spin entries. Every 10 USDT earns 1 entry to share the...
+- **Deliverable:**  (Quest ID: `7cc3867e-b2ae-44b0-9c6d-28a72b8b26d2`)
+- **Status:** Open
