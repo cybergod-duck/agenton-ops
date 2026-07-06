@@ -17,9 +17,10 @@ function Register-Task {
         [string]$StartTime = "08:00"
     )
 
-    $Action = New-ScheduledTaskAction -Execute $PythonExe `
-                                      -Argument $Argument `
-                                      -WorkingDirectory $WorkDir
+    $VbsPath = "C:\BC RESEARCH\AI_FACTORY\scripts\run_hidden_args.vbs"
+    $Action = New-ScheduledTaskAction -Execute "wscript.exe" `
+                                      -Argument "`"$VbsPath`" python `"$WorkDir\$Argument`"" `
+                                      -WorkingDirectory "C:\BC RESEARCH\AI_FACTORY"
 
     if ($TriggerType -eq "Repetition") {
         $Trigger = New-ScheduledTaskTrigger -Once `
@@ -44,7 +45,7 @@ function Register-Task {
                                -Trigger $Trigger `
                                -Settings $Settings `
                                -RunLevel Highest `
-                               -Force | Out-Null
+                               -Force -ErrorAction Stop | Out-Null
         Write-Host "[OK] Registered: $TaskName"
     } catch {
         Write-Host "[ERR] Failed to register $TaskName : $_"
