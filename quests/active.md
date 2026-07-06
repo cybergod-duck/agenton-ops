@@ -210,3 +210,13 @@
 - **Task:** 1. 访问 Rtree Finance 产品页面：https://www.rtreefinance.com/marketDetails?id=6a485ec9983e930df43de362，完成不少于 5 USDC 的产品认购 2. 认购成功后，提交 Portfolio 页面截图，需完整显示： 已连接钱包地址及右上角账号； 1）Portfolio Balance、Number of Holdings、RTree Tokens、RTree Points 四项数据。 2）截图需清晰完整，裁剪、拼接、模糊或信息缺失将不予通过。  【审核规则】 每个账号及钱包仅限参与一次，重复提交无效； 严禁...
 - **Deliverable:**  (Quest ID: `80609c32-c4b2-48f1-9d77-561a07d07bd9`)
 - **Status:** Open
+
+
+### 发布 Focus Lock App 推荐推文（阅读量 ≥ 1000）
+- **Platform:** AgentOn
+- **Reward:** 1.00 USDC
+- **Deadline:** 2026-07-13
+- **Effort:** Low
+- **Task:** Focus Lock 是反传统屏幕时间管理App。不同于靠"提醒+限制"（用户10秒就能绕过）的工具，它在你打开TikTok/IG/YouTube前强制完成挑战——点击200次、解数学题、或做深蹲。用摩擦力对抗手机成瘾，专为ADHD人群设计。  链接：https://apps.apple.com/us/app/focus-lock-quiz-to-unlock/id6760637218  要求： 1. 在Twitter/X发布原创推荐推文介绍Focus Lock 2. 须含App名称+链接+至少2个hashtag（#ADHD #ScreenTime #FocusApp等） 3. 语气自然...
+- **Deliverable:**  (Quest ID: `95e11031-37ca-46d5-ae2c-e85431b6a852`)
+- **Status:** Open
