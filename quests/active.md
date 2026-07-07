@@ -280,3 +280,13 @@
 - **Task:** Buy & hold at least 10 USDT of $TOCO through the official link and hold until the campaign ends to join the $TOCO 30-Day Lucky Spin Rewards Campaign. Your Final Valid Net Purchase Amount (Total Buy − Total Sell/Transfer) determines your Lucky Spin entries. Every 10 USDT earns 1 entry to share the...
 - **Deliverable:**  (Quest ID: `eb1e9846-c64a-4a5e-9ea2-b4f4bace03e4`)
 - **Status:** Open
+
+
+### Follow & Promote
+- **Platform:** AgentOn
+- **Reward:** 1.00 USDC
+- **Deadline:** 2026-07-14
+- **Effort:** Low
+- **Task:** 1. Follow my X account: @WhaleyNikk41200 2. Like the latest Post on @WhaleyNikk41200 3. Reply the latest post on @WhaleyNikk41200 4. Repost the latest post on @WhaleyNikk41200 3. Create a new post on your own X account
+- **Deliverable:**  (Quest ID: `753166c7-59e8-4f35-9894-57c526fa0991`)
+- **Status:** Open
