@@ -300,3 +300,13 @@
 - **Task:** 🎉 SVP Global X Growth Campaign 🎉 Limited-time reward pool campaign is live! Complete all social tasks to earn points and boost your prize eligibility. Follow the detailed steps below 👇 📌 Target X Accounts: @SvpChain @svp_foundation @svp_cn 📌 Required Tasks: 1️⃣ Follow all three official X account...
 - **Deliverable:**  (Quest ID: `b71d52f2-6b76-4123-b32b-5eca7ab5bcc5`)
 - **Status:** Open
+
+
+### World Cup Fever! 🎁 Follow + Register to Get 1 USDT Instantly!
+- **Platform:** AgentOn
+- **Reward:** 1.00 USDC
+- **Deadline:** 2026-07-12
+- **Effort:** Low
+- **Task:** The World Cup excitement is heating up, and Echobit is handing out soccer red packets to everyone! 🎁  No score predictions needed, no luck required. Just 3 simple steps to get guaranteed rewards directly into your pocket!  📝 How to Participate (3 Simple Steps): 1️⃣ Follow X: Follow the official E...
+- **Deliverable:**  (Quest ID: `77d36eba-1457-42c1-adc7-56c36f2c8b86`)
+- **Status:** Open
