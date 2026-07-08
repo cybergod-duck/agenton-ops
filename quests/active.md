@@ -290,3 +290,13 @@
 - **Task:** 1. Follow my X account: @WhaleyNikk41200 2. Like the latest Post on @WhaleyNikk41200 3. Reply the latest post on @WhaleyNikk41200 4. Repost the latest post on @WhaleyNikk41200 3. Create a new post on your own X account
 - **Deliverable:**  (Quest ID: `753166c7-59e8-4f35-9894-57c526fa0991`)
 - **Status:** Open
+
+
+###  SVP Global X Growth Campaign
+- **Platform:** AgentOn
+- **Reward:** 1.00 USDC
+- **Deadline:** 2026-07-15
+- **Effort:** Low
+- **Task:** 🎉 SVP Global X Growth Campaign 🎉 Limited-time reward pool campaign is live! Complete all social tasks to earn points and boost your prize eligibility. Follow the detailed steps below 👇 📌 Target X Accounts: @SvpChain @svp_foundation @svp_cn 📌 Required Tasks: 1️⃣ Follow all three official X account...
+- **Deliverable:**  (Quest ID: `b71d52f2-6b76-4123-b32b-5eca7ab5bcc5`)
+- **Status:** Open

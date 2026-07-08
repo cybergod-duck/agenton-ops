@@ -45,3 +45,5 @@ $.tweet_id: does not match the regex pattern ^[0-9]{1,19}$ |
 | 2026-06-30 00:00:15 | POST /2/tweets | @HTX_DAO Excited about the HTX Genesis Hackathon!  | $0.01 | Success |
 | 2026-07-07 14:06:40 | GET /2/users/by/username/:username | WhaleyNikk41200 | $0.01 | Failed: 402 Payment Required
 Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-08 04:00:18 | GET /2/users/by/username/:username | SvpChain | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
