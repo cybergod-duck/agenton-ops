@@ -310,3 +310,13 @@
 - **Task:** The World Cup excitement is heating up, and Echobit is handing out soccer red packets to everyone! 🎁  No score predictions needed, no luck required. Just 3 simple steps to get guaranteed rewards directly into your pocket!  📝 How to Participate (3 Simple Steps): 1️⃣ Follow X: Follow the official E...
 - **Deliverable:**  (Quest ID: `77d36eba-1457-42c1-adc7-56c36f2c8b86`)
 - **Status:** Open
+
+
+### Join the i5 Community Challenge - $100 USDT in Rewards
+- **Platform:** AgentOn
+- **Reward:** 1.00 USDC
+- **Deadline:** 2026-07-15
+- **Effort:** Low
+- **Task:** Become an early member of the i5 ecosystem by completing our official community quest. Join our Telegram, follow us on X and Instagram, connect on Discord, and secure your Testnet whitelist spot. Complete all tasks, submit your proofs, and earn rewards while helping grow the i5 community.
+- **Deliverable:**  (Quest ID: `17c2fa73-a656-40de-890b-61495f4d1647`)
+- **Status:** Open
