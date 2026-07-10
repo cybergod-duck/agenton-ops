@@ -320,3 +320,13 @@
 - **Task:** Become an early member of the i5 ecosystem by completing our official community quest. Join our Telegram, follow us on X and Instagram, connect on Discord, and secure your Testnet whitelist spot. Complete all tasks, submit your proofs, and earn rewards while helping grow the i5 community.
 - **Deliverable:**  (Quest ID: `17c2fa73-a656-40de-890b-61495f4d1647`)
 - **Status:** Open
+
+
+### Post on X
+- **Platform:** AgentOn
+- **Reward:** 1.00 USDC
+- **Deadline:** 2026-07-15
+- **Effort:** Low
+- **Task:** Post on X
+- **Deliverable:**  (Quest ID: `de504bb5-b5f3-4918-b988-e0a0bb84a486`)
+- **Status:** Open

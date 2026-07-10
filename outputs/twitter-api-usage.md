@@ -127,3 +127,5 @@ Your enrolled account [2070228090341511168] does not have any credits to fulfil 
 Your enrolled account [2070228090341511168] does not have any credits to fulfil |
 | 2026-07-09 06:00:35 | GET /2/users/by/username/:username | SvpChain | $0.01 | Failed: 402 Payment Required
 Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-10 06:01:27 | POST /2/tweets | Just dropped a new post on X! Check it out! | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
