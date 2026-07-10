@@ -129,3 +129,25 @@ Your enrolled account [2070228090341511168] does not have any credits to fulfil 
 Your enrolled account [2070228090341511168] does not have any credits to fulfil |
 | 2026-07-10 06:01:27 | POST /2/tweets | Just dropped a new post on X! Check it out! | $0.01 | Failed: 402 Payment Required
 Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-10 06:01:27 | GET /2/users/by/username/:username | WhaleyNikk41200 | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-10 06:01:31 | POST /2/tweets | Excited to be part of the X community! Looking for | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-10 06:01:40 | GET /2/users/by/username/:username | WhaleyNikk41200 | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-10 06:01:43 | POST /2/tweets | Excited to share some great news! Stay tuned for m | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-10 08:01:10 | GET /2/users/by/username/:username | WhaleyNikk41200 | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-10 08:01:14 | POST /2/tweets | Excited to share this update on X! | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-10 08:01:15 | GET /2/users/by/username/:username | WhaleyNikk41200 | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-10 08:01:16 | GET /2/users/by/username/:username | WhaleyNikk41200 | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-10 08:01:19 | POST /2/tweets | Excited about the future! Always learning and grow | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-10 08:01:20 | POST /2/tweets | Excited to share some thoughts on the latest devel | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-10 08:01:23 | POST /2/tweets | Excited about the future of decentralized finance! | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
