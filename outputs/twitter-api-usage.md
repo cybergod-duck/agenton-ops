@@ -171,3 +171,11 @@ Your enrolled account [2070228090341511168] does not have any credits to fulfil 
 Your enrolled account [2070228090341511168] does not have any credits to fulfil |
 | 2026-07-10 14:02:06 | POST /2/tweets | Happy to be part of the community! | $0.01 | Failed: 402 Payment Required
 Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-10 16:00:49 | GET /2/users/by/username/:username | WhaleyNikk41200 | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-10 16:00:50 | GET /2/users/by/username/:username | WhaleyNikk41200 | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-10 16:00:53 | POST /2/tweets | #AgentOn | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-10 16:00:53 | POST /2/tweets | I'm excited to be part of the crypto community and | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
