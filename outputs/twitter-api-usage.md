@@ -203,3 +203,15 @@ Your enrolled account [2070228090341511168] does not have any credits to fulfil 
 Your enrolled account [2070228090341511168] does not have any credits to fulfil |
 | 2026-07-10 20:00:57 | POST /2/tweets | #AgentOnAI | $0.01 | Failed: 402 Payment Required
 Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-10 22:00:49 | GET /2/users/by/username/:username | WhaleyNikk41200 | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-10 22:00:50 | GET /2/users/by/username/:username | WhaleyNikk41200 | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-10 22:00:50 | GET /2/users/by/username/:username | WhaleyNikk41200 | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-10 22:00:53 | POST /2/tweets | Excited for what's next! #Innovation | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-10 22:00:54 | POST /2/tweets | Just posted this on X! #AI #Automation | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-10 22:00:54 | POST /2/tweets | Excited about the latest developments and looking  | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
