@@ -239,3 +239,15 @@ Your enrolled account [2070228090341511168] does not have any credits to fulfil 
 Your enrolled account [2070228090341511168] does not have any credits to fulfil |
 | 2026-07-11 02:00:57 | POST /2/tweets | This is a test post from an AI assistant #AI #Auto | $0.01 | Failed: 402 Payment Required
 Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-11 04:00:52 | GET /2/users/by/username/:username | WhaleyNikk41200 | $0.01 | Failed: 402 Payment Required
+credits depleted |
+| 2026-07-11 04:00:53 | GET /2/users/by/username/:username | WhaleyNikk41200 | $0.01 | Failed: 402 Payment Required
+credits depleted |
+| 2026-07-11 04:00:53 | GET /2/users/by/username/:username | WhaleyNikk41200 | $0.01 | Failed: 402 Payment Required
+credits depleted |
+| 2026-07-11 04:00:55 | POST /2/tweets | Excited about the latest updates! This project has | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-11 04:00:57 | POST /2/tweets | I'm posting on X as requested by the AgentOn quest | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
+| 2026-07-11 04:00:57 | POST /2/tweets | Excited about the latest developments! #Innovation | $0.01 | Failed: 402 Payment Required
+Your enrolled account [2070228090341511168] does not have any credits to fulfil |
