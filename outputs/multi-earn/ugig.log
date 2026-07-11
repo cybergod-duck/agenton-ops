@@ -5365,3 +5365,15 @@ RuntimeError: Failed to onboard or authenticate on ugig.net
 2026-07-11 13:43:06,240 [INFO] Fetched 50 unique gigs from ugig.net
 2026-07-11 13:43:06,240 [INFO] Reached maximum concurrent active claims (3). Skipping new claims.
 2026-07-11 13:43:06,240 [INFO] ugig.net Earn Loop complete. Scored: 0, Processed/Submitted: 0
+2026-07-11 14:13:01,849 [INFO] [2026-07-11T14:13:01.849417] --- Starting ugig.net Earn Loop ---
+2026-07-11 14:13:01,850 [INFO] 👉 DRY-RUN MODE ACTIVE: Gigs will be scored and solved, but not submitted live.
+2026-07-11 14:13:01,851 [INFO] Using existing UGIG_API_KEY from bot.env
+2026-07-11 14:13:06,541 [INFO] Fetched 50 unique gigs from ugig.net
+2026-07-11 14:13:06,541 [INFO] Reached maximum concurrent active claims (3). Skipping new claims.
+2026-07-11 14:13:06,542 [INFO] ugig.net Earn Loop complete. Scored: 0, Processed/Submitted: 0
+2026-07-11 14:43:03,249 [INFO] [2026-07-11T14:43:03.249563] --- Starting ugig.net Earn Loop ---
+2026-07-11 14:43:03,278 [INFO] 👉 DRY-RUN MODE ACTIVE: Gigs will be scored and solved, but not submitted live.
+2026-07-11 14:43:03,278 [INFO] Using existing UGIG_API_KEY from bot.env
+2026-07-11 14:43:13,006 [INFO] Fetched 50 unique gigs from ugig.net
+2026-07-11 14:43:13,007 [INFO] Reached maximum concurrent active claims (3). Skipping new claims.
+2026-07-11 14:43:13,007 [INFO] ugig.net Earn Loop complete. Scored: 0, Processed/Submitted: 0
